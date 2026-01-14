@@ -43,7 +43,8 @@
                     <div class="card-header bg-primary text-white fw-bold">Nueva Propiedad</div>
                     <div class="card-body">
                         <form id="propiedadForm">
-                            <input type="hidden" id="token"> <div class="mb-2"><label>Título</label><input type="text" id="titulo" class="form-control" required></div>
+                            <input type="hidden" id="token"> 
+                            <div class="mb-2"><label>Título</label><input type="text" id="titulo" class="form-control" required></div>
                             <div class="row mb-2">
                                 <div class="col"><label>Operación</label><select id="operacion" class="form-select"><option>Venta</option><option>Arriendo</option></select></div>
                                 <div class="col"><label>Tipo</label><select id="tipo" class="form-select"><option>Casa</option><option>Departamento</option><option>Terreno</option></select></div>
@@ -71,7 +72,8 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3000/api';
+        // --- CAMBIO IMPORTANTE AQUÍ: Se eliminó 'http://localhost:3000' ---
+        const API_URL = '/api';
 
         // --- LÓGICA DE LOGIN ---
         document.getElementById('loginForm').addEventListener('submit', async (e) => {

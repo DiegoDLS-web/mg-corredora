@@ -359,6 +359,8 @@
     <script>
         // --- CONFIGURACIÓN PRINCIPAL ---
         const TELEFONO_EMPRESA = "56975575540";
+        // --- AQUÍ ESTÁ EL CAMBIO CLAVE: RUTA RELATIVA ---
+        const API_URL = '/api'; 
         // -------------------------------
 
         let todasLasPropiedades = [];
@@ -366,7 +368,8 @@
 
         async function cargarPropiedades() {
             try {
-                const res = await fetch('/api/propiedades');
+                // Usamos la variable API_URL + la ruta
+                const res = await fetch(`${API_URL}/propiedades`);
                 todasLasPropiedades = await res.json();
                 filtrarPropiedades();
             } catch (error) {
