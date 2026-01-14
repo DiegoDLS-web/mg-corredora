@@ -9,11 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* --- ESTILOS MG --- */
+        /* --- ESTILOS GENERALES --- */
         :root {
-            /* Azul Profundo Elegante */
             --color-primario: #003366; 
-            --color-secundario: #4a4a4a; /* Gris Oscuro */
+            --color-secundario: #4a4a4a;
             --color-fondo: #f8f9fa;
         }
 
@@ -40,15 +39,13 @@
         .nav-link:hover, .nav-link.active { 
             color: var(--color-primario) !important; border-bottom: 2px solid var(--color-primario);
         }
-
-        /* Estilo para el botón "¿Vendes tu casa?" */
         .nav-link-vender {
             color: var(--color-primario) !important;
             border-bottom: 2px solid transparent;
         }
         .nav-link-vender:hover {
             border-bottom: 2px solid var(--color-primario);
-            background-color: #f0f4f8; /* Un fondo azul muy suave al pasar el mouse */
+            background-color: #f0f4f8;
         }
         
         /* BOTÓN ALIANZA */
@@ -87,21 +84,13 @@
         .section-title::after { content: ''; display: block; width: 60px; height: 3px; background-color: var(--color-primario); margin: 15px auto 0; }
 
         /* LISTA DE SERVICIOS */
-        .lista-servicios li {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-        }
-        .lista-servicios i {
-            color: var(--color-primario);
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
+        .lista-servicios li { margin-bottom: 10px; display: flex; align-items: center; }
+        .lista-servicios i { color: var(--color-primario); margin-right: 10px; font-size: 1.2rem; }
 
-        /* TARJETAS */
-        .card-propiedad { border: none; border-radius: 0; background: white; box-shadow: 0 5px 20px rgba(0,0,0,0.05); transition: transform 0.3s; }
+        /* TARJETAS DE PROPIEDAD */
+        .card-propiedad { border: none; border-radius: 0; background: white; box-shadow: 0 5px 20px rgba(0,0,0,0.05); transition: transform 0.3s; cursor: pointer; }
         .card-propiedad:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .etiqueta-operacion { position: absolute; top: 20px; left: 20px; background: var(--color-primario); color: white; padding: 5px 15px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .etiqueta-operacion { position: absolute; top: 20px; left: 20px; background: var(--color-primario); color: white; padding: 5px 15px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; z-index: 10; }
         .card-body { padding: 25px; }
         .precio { font-size: 1.5rem; font-weight: 700; color: var(--color-primario); }
         .btn-contacto-card {
@@ -109,6 +98,13 @@
             font-weight: 600; text-transform: uppercase; font-size: 0.8rem; border-radius: 0; transition: all 0.3s;
         }
         .btn-contacto-card:hover { background: var(--color-primario); color: white; }
+
+        /* NUEVO: ESTILOS PARA EL MODAL DE GALERÍA */
+        .carousel-item img { height: 400px; object-fit: contain; background-color: #000; }
+        .modal-detalles-content { border-radius: 0; border: none; overflow: hidden; }
+        .modal-header { border-bottom: none; background-color: #fff; }
+        .btn-wsp-modal { background-color: #25D366; color: white; font-weight: 700; border: none; padding: 10px 30px; border-radius: 50px; transition: 0.3s; }
+        .btn-wsp-modal:hover { background-color: #128C7E; color: white; transform: scale(1.05); }
 
         /* CLIENTES */
         .clientes-section { background-color: white; }
@@ -355,22 +351,70 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalDetalle" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content modal-detalles-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="modalTitulo">Titulo Propiedad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="carouselPropiedad" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner" id="carouselInner">
+                            </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselPropiedad" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselPropiedad" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="text-primary fw-bold m-0" id="modalPrecio">UF 0.000</h3>
+                            <span class="badge bg-dark" id="modalOperacion">VENTA</span>
+                        </div>
+                        <div class="row text-center mb-4">
+                            <div class="col border-end"><strong><i class="bi bi-door-closed"></i></strong> <span id="modalDorm"></span> Dorm</div>
+                            <div class="col border-end"><strong><i class="bi bi-droplet"></i></strong> <span id="modalBanos"></span> Baños</div>
+                            <div class="col"><strong><i class="bi bi-house"></i></strong> <span id="modalTipo"></span></div>
+                        </div>
+                        <p class="text-muted"><i class="bi bi-geo-alt-fill text-danger"></i> <span id="modalUbicacion"></span></p>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <a href="#" id="btnWspFinal" target="_blank" class="btn btn-wsp-modal">
+                                <i class="bi bi-whatsapp"></i> Me interesa esta propiedad
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // --- CONFIGURACIÓN PRINCIPAL ---
         const TELEFONO_EMPRESA = "56975575540";
-        // --- AQUÍ ESTÁ EL CAMBIO CLAVE: RUTA RELATIVA ---
-        const API_URL = '/api'; 
-        // -------------------------------
+        const API_URL = '/api'; // Ruta relativa corregida
 
         let todasLasPropiedades = [];
         let operacionActual = 'Venta';
+        
+        // Inicializar el Modal de Bootstrap
+        let modalDetalle; 
+
+        document.addEventListener('DOMContentLoaded', () => {
+            modalDetalle = new bootstrap.Modal(document.getElementById('modalDetalle'));
+            cargarPropiedades();
+            document.getElementById('footer-telefono-li').innerHTML = `<i class="bi bi-whatsapp"></i> +${TELEFONO_EMPRESA}`;
+        });
 
         async function cargarPropiedades() {
             try {
-                // Usamos la variable API_URL + la ruta
                 const res = await fetch(`${API_URL}/propiedades`);
                 todasLasPropiedades = await res.json();
+                document.getElementById('filtroOperacion').value = operacionActual; 
                 filtrarPropiedades();
             } catch (error) {
                 console.error("Error cargando datos:", error);
@@ -378,22 +422,18 @@
             }
         }
 
-        // Función para cambiar la operación desde el select del buscador
         function setOperacion(op) {
             operacionActual = op;
         }
 
         function filtrarPropiedades() {
-            const ubicacionBusqueda = document.getElementById('inputUbicacion').value.toLowerCase();
-            const tipoBusqueda = document.getElementById('filtroTipo').value;
+            const ubicacion = document.getElementById('inputUbicacion').value.toLowerCase();
+            const tipo = document.getElementById('filtroTipo').value;
             
             const filtradas = todasLasPropiedades.filter(p => {
-                const coincideOperacion = p.operacion === operacionActual;
-                const coincideUbicacion = p.ubicacion.toLowerCase().includes(ubicacionBusqueda) || 
-                                          p.titulo.toLowerCase().includes(ubicacionBusqueda);
-                const coincideTipo = tipoBusqueda === "" ? true : p.tipo === tipoBusqueda;
-
-                return coincideOperacion && coincideUbicacion && coincideTipo;
+                return p.operacion === operacionActual &&
+                       (p.ubicacion.toLowerCase().includes(ubicacion) || p.titulo.toLowerCase().includes(ubicacion)) &&
+                       (tipo === "" || p.tipo === tipo);
             });
 
             renderizar(filtradas);
@@ -401,9 +441,7 @@
 
         function renderizar(lista) {
             const contenedor = document.getElementById('contenedor-propiedades');
-            const contador = document.getElementById('contador-propiedades');
-            
-            contador.innerText = `${lista.length} Propiedades en ${operacionActual}`;
+            document.getElementById('contador-propiedades').innerText = `${lista.length} Propiedades en ${operacionActual}`;
             contenedor.innerHTML = '';
 
             if(lista.length === 0) {
@@ -416,46 +454,81 @@
                 return;
             }
 
-            lista.forEach(p => {
-                const mensaje = `Hola MGPropiedades, me interesa la propiedad: ${p.titulo} (${p.ubicacion})`;
-                const linkWsp = `https://wa.me/${TELEFONO_EMPRESA}?text=${encodeURIComponent(mensaje)}`;
-                
-                contenedor.innerHTML += `
-                    <div class="col-md-4">
-                        <div class="card card-propiedad h-100">
-                            <div class="position-relative">
-                                <span class="etiqueta-operacion">${p.operacion}</span>
-                                <img src="${p.imagen}" class="card-img-top" style="height: 250px; object-fit: cover;">
-                            </div>
-                            <div class="card-body d-flex flex-column">
-                                <div class="mb-2 text-muted small text-uppercase fw-bold">
-                                    <i class="bi bi-geo-alt"></i> ${p.ubicacion}
-                                </div>
-                                <h5 class="card-title fw-bold mb-3 text-truncate">${p.titulo}</h5>
-                                <div class="row g-0 mb-3 text-center text-muted small border-top border-bottom py-2">
-                                    <div class="col border-end"><i class="bi bi-house"></i> ${p.tipo}</div>
-                                    <div class="col border-end"><i class="bi bi-door-closed"></i> ${p.dormitorios}</div>
-                                    <div class="col"><i class="bi bi-droplet"></i> ${p.banos}</div>
-                                </div>
-                                <h4 class="precio mb-3">${p.precio}</h4>
-                                <a href="${linkWsp}" target="_blank" class="btn btn-contacto-card mt-auto">
-                                    <i class="bi bi-whatsapp"></i> Ver Detalles
-                                </a>
-                            </div>
+            lista.forEach((p) => {
+                // TRUCO: Convertimos el texto largo en un array de fotos
+                // Separamos por comas, saltos de línea o espacios
+                const fotos = p.imagen ? p.imagen.split(/[,\s\n]+/) : ['https://via.placeholder.com/400'];
+                const fotoPrincipal = fotos[0]; // La primera para la tarjeta
+
+                const card = document.createElement('div');
+                card.className = 'col-md-4';
+                card.innerHTML = `
+                    <div class="card card-propiedad h-100">
+                        <div class="position-relative">
+                            <span class="etiqueta-operacion">${p.operacion}</span>
+                            <img src="${fotoPrincipal}" class="card-img-top" style="height: 250px; object-fit: cover;">
                         </div>
-                    </div>`;
+                        <div class="card-body d-flex flex-column">
+                            <div class="mb-2 text-muted small text-uppercase fw-bold"><i class="bi bi-geo-alt"></i> ${p.ubicacion}</div>
+                            <h5 class="card-title fw-bold mb-3 text-truncate">${p.titulo}</h5>
+                            <div class="row g-0 mb-3 text-center text-muted small border-top border-bottom py-2">
+                                <div class="col border-end"><i class="bi bi-house"></i> ${p.tipo}</div>
+                                <div class="col border-end"><i class="bi bi-door-closed"></i> ${p.dormitorios}</div>
+                                <div class="col"><i class="bi bi-droplet"></i> ${p.banos}</div>
+                            </div>
+                            <h4 class="precio mb-3">${p.precio}</h4>
+                            <button class="btn btn-contacto-card mt-auto fw-bold">
+                                <i class="bi bi-eye"></i> VER DETALLES
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Asignar el click para abrir el modal pasando EL OBJETO COMPLETO 'p'
+                card.querySelector('.card-propiedad').onclick = () => abrirModal(p);
+
+                contenedor.appendChild(card);
             });
+        }
+
+        function abrirModal(propiedad) {
+            // 1. Llenar textos
+            document.getElementById('modalTitulo').innerText = propiedad.titulo;
+            document.getElementById('modalPrecio').innerText = propiedad.precio;
+            document.getElementById('modalOperacion').innerText = propiedad.operacion;
+            document.getElementById('modalDorm').innerText = propiedad.dormitorios;
+            document.getElementById('modalBanos').innerText = propiedad.banos;
+            document.getElementById('modalTipo').innerText = propiedad.tipo;
+            document.getElementById('modalUbicacion').innerText = propiedad.ubicacion;
+
+            // 2. Configurar botón WhatsApp dentro del modal
+            const mensaje = `Hola MGPropiedades, vi en la web la propiedad: ${propiedad.titulo} (${propiedad.precio}). Me gustaría más información.`;
+            document.getElementById('btnWspFinal').href = `https://wa.me/${TELEFONO_EMPRESA}?text=${encodeURIComponent(mensaje)}`;
+
+            // 3. Generar Carousel de Fotos
+            const carouselInner = document.getElementById('carouselInner');
+            carouselInner.innerHTML = '';
+            
+            // Separamos las fotos nuevamente
+            const fotos = propiedad.imagen ? propiedad.imagen.split(/[,\s\n]+/) : [];
+            
+            fotos.forEach((fotoUrl, i) => {
+                if(fotoUrl && fotoUrl.length > 5) { // Validar que no sea un string vacío
+                    const div = document.createElement('div');
+                    div.className = `carousel-item ${i === 0 ? 'active' : ''}`; // El primero debe ser active
+                    div.innerHTML = `<img src="${fotoUrl}" class="d-block w-100" alt="Foto ${i}">`;
+                    carouselInner.appendChild(div);
+                }
+            });
+
+            // 4. Mostrar Modal
+            modalDetalle.show();
         }
 
         function contactarAlianza() {
             const mensaje = "Hola MGPropiedades, soy corredor y me gustaría colaborar con ustedes.";
             window.open(`https://wa.me/${TELEFONO_EMPRESA}?text=${encodeURIComponent(mensaje)}`, '_blank');
         }
-
-        document.getElementById('filtroOperacion').value = operacionActual; 
-        
-        cargarPropiedades();
-        document.getElementById('footer-telefono-li').innerHTML = `<i class="bi bi-whatsapp"></i> +${TELEFONO_EMPRESA}`;
     </script>
 </body>
 </html>

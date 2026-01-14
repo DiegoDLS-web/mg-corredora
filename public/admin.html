@@ -9,8 +9,9 @@
     <style>
         body { background-color: #f0f2f5; }
         .login-container { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .dashboard-container { display: none; } /* Oculto por defecto */
-        .card-img-top { height: 150px; object-fit: cover; }
+        .dashboard-container { display: none; }
+        /* Ajuste para ver la imagen en la lista del admin */
+        .admin-img-preview { height: 150px; object-fit: cover; width: 100%; }
     </style>
 </head>
 <body>
@@ -44,18 +45,56 @@
                     <div class="card-body">
                         <form id="propiedadForm">
                             <input type="hidden" id="token"> 
-                            <div class="mb-2"><label>Título</label><input type="text" id="titulo" class="form-control" required></div>
-                            <div class="row mb-2">
-                                <div class="col"><label>Operación</label><select id="operacion" class="form-select"><option>Venta</option><option>Arriendo</option></select></div>
-                                <div class="col"><label>Tipo</label><select id="tipo" class="form-select"><option>Casa</option><option>Departamento</option><option>Terreno</option></select></div>
+                            
+                            <div class="mb-2">
+                                <label class="fw-bold small">Título</label>
+                                <input type="text" id="titulo" class="form-control" required>
                             </div>
-                            <div class="mb-2"><label>Precio (ej: UF 3.000)</label><input type="text" id="precio" class="form-control" required></div>
-                            <div class="mb-2"><label>Ubicación</label><input type="text" id="ubicacion" class="form-control" required></div>
+                            
                             <div class="row mb-2">
-                                <div class="col"><label>Dormitorios</label><input type="number" id="dormitorios" class="form-control" value="0"></div>
-                                <div class="col"><label>Baños</label><input type="number" id="banos" class="form-control" value="0"></div>
+                                <div class="col">
+                                    <label class="fw-bold small">Operación</label>
+                                    <select id="operacion" class="form-select">
+                                        <option>Venta</option>
+                                        <option>Arriendo</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label class="fw-bold small">Tipo</label>
+                                    <select id="tipo" class="form-select">
+                                        <option>Casa</option>
+                                        <option>Departamento</option>
+                                        <option>Terreno</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="mb-3"><label>URL Imagen</label><input type="text" id="imagen" class="form-control" placeholder="https://..." required></div>
+
+                            <div class="mb-2">
+                                <label class="fw-bold small">Precio (ej: UF 3.000)</label>
+                                <input type="text" id="precio" class="form-control" required>
+                            </div>
+                            
+                            <div class="mb-2">
+                                <label class="fw-bold small">Ubicación</label>
+                                <input type="text" id="ubicacion" class="form-control" required>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <label class="fw-bold small">Dorm.</label>
+                                    <input type="number" id="dormitorios" class="form-control" value="0">
+                                </div>
+                                <div class="col">
+                                    <label class="fw-bold small">Baños</label>
+                                    <input type="number" id="banos" class="form-control" value="0">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="fw-bold small">URLs de Imágenes</label>
+                                <textarea id="imagen" class="form-control" rows="4" placeholder="Pega los links aquí (separados por coma o uno por línea). La primera será la portada." required></textarea>
+                                <div class="form-text text-muted small">Ej: https://foto1.jpg, https://foto2.jpg</div>
+                            </div>
                             
                             <button type="submit" class="btn btn-success w-100">Publicar Propiedad</button>
                         </form>
@@ -72,10 +111,9 @@
     </div>
 
     <script>
-        // --- CAMBIO IMPORTANTE AQUÍ: Se eliminó 'http://localhost:3000' ---
-        const API_URL = '/api';
+        const API_URL = '/api'; // Ruta relativa corregida
 
-        // --- LÓGICA DE LOGIN ---
+        // --- LOGIN ---
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -89,10 +127,10 @@
 
             if (res.ok) {
                 const data = await res.json();
-                localStorage.setItem('adminToken', data.token); // Guardar llave
+                localStorage.setItem('adminToken', data.token);
                 mostrarDashboard();
             } else {
-                document.getElementById('errorMsg').innerText = "Usuario o contraseña incorrectos.";
+                document.getElementById('errorMsg').innerText = "Credenciales incorrectas.";
             }
         });
 
@@ -108,7 +146,7 @@
             location.reload();
         }
 
-        // --- LÓGICA DE GESTIÓN ---
+        // --- GESTIÓN ---
         async function cargarPropiedadesAdmin() {
             const res = await fetch(`${API_URL}/propiedades`);
             const props = await res.json();
@@ -116,12 +154,16 @@
             lista.innerHTML = '';
 
             props.forEach(p => {
+                // TRUCO: Tomamos solo la primera foto para mostrar en el admin
+                // Separamos por comas, saltos de línea o espacios
+                const primeraFoto = p.imagen ? p.imagen.split(/[,\s\n]+/)[0] : '';
+
                 lista.innerHTML += `
                     <div class="col-md-6">
                         <div class="card h-100 shadow-sm">
                             <div class="row g-0 h-100">
                                 <div class="col-4">
-                                    <img src="${p.imagen}" class="img-fluid rounded-start h-100" style="object-fit:cover">
+                                    <img src="${primeraFoto}" class="img-fluid rounded-start h-100 admin-img-preview">
                                 </div>
                                 <div class="col-8">
                                     <div class="card-body p-2">
@@ -139,20 +181,27 @@
             });
         }
 
-        // CREAR PROPIEDAD
+        // CREAR
         document.getElementById('propiedadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('adminToken');
             
+            // PROCESAMIENTO DE IMÁGENES:
+            // 1. Obtener valor del textarea
+            // 2. Reemplazar saltos de línea por comas
+            // 3. Limpiar espacios extra
+            let rawImages = document.getElementById('imagen').value;
+            let cleanImages = rawImages.replace(/\n/g, ',').trim();
+
             const nuevaPropiedad = {
                 titulo: document.getElementById('titulo').value,
                 operacion: document.getElementById('operacion').value,
                 tipo: document.getElementById('tipo').value,
                 precio: document.getElementById('precio').value,
                 ubicacion: document.getElementById('ubicacion').value,
-                dormitorios: parseInt(document.getElementById('dormitorios').value),
-                banos: parseInt(document.getElementById('banos').value),
-                imagen: document.getElementById('imagen').value,
+                dormitorios: parseInt(document.getElementById('dormitorios').value) || 0,
+                banos: parseInt(document.getElementById('banos').value) || 0,
+                imagen: cleanImages, // Enviamos todas las fotos como un solo texto largo
                 corredora: "MGPropiedades"
             };
 
@@ -166,17 +215,17 @@
             });
 
             if(res.ok) {
-                alert("Propiedad creada!");
+                alert("Propiedad creada con éxito!");
                 document.getElementById('propiedadForm').reset();
                 cargarPropiedadesAdmin();
             } else {
-                alert("Error al crear. Verifica tu sesión.");
+                alert("Error al crear. Revisa la conexión o sesión.");
             }
         });
 
-        // ELIMINAR PROPIEDAD
+        // ELIMINAR
         async function eliminarPropiedad(id) {
-            if(!confirm("¿Estás seguro de eliminar esta propiedad?")) return;
+            if(!confirm("¿Eliminar propiedad permanentemente?")) return;
             const token = localStorage.getItem('adminToken');
 
             const res = await fetch(`${API_URL}/propiedades/${id}`, {
@@ -191,7 +240,6 @@
             }
         }
 
-        // Al cargar página, revisar si ya estaba logueado
         if(localStorage.getItem('adminToken')) {
             mostrarDashboard();
         }
