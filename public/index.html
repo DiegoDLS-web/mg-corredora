@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MGPropiedades | Gestión Inmobiliaria</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS MG --- */
+        :root {
+            /* Azul Profundo Elegante */
+            --color-primario: #003366; 
+            --color-secundario: #4a4a4a; /* Gris Oscuro */
+            --color-fondo: #f8f9fa;
+        }
+
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: var(--color-fondo); 
+            color: var(--color-secundario);
+        }
+        
+        /* NAVBAR */
+        .navbar { 
+            background-color: white; 
+            padding: 15px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05); 
+        }
+        .navbar-brand img { max-height: 55px; }
+        .navbar-brand span {
+            font-weight: 700; color: var(--color-primario); font-size: 1.2rem; letter-spacing: 1px; text-transform: uppercase;
+        }
+        .nav-link { 
+            color: var(--color-secundario) !important; 
+            font-weight: 500; text-transform: uppercase; font-size: 0.9rem; margin: 0 10px; transition: color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active { 
+            color: var(--color-primario) !important; border-bottom: 2px solid var(--color-primario);
+        }
+
+        /* Estilo para el botón "¿Vendes tu casa?" */
+        .nav-link-vender {
+            color: var(--color-primario) !important;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link-vender:hover {
+            border-bottom: 2px solid var(--color-primario);
+            background-color: #f0f4f8; /* Un fondo azul muy suave al pasar el mouse */
+        }
+        
+        /* BOTÓN ALIANZA */
+        .btn-alianza { 
+            background-color: var(--color-primario); color: white; border-radius: 0; padding: 8px 25px; 
+            font-weight: 600; border: 2px solid var(--color-primario); text-transform: uppercase; font-size: 0.85rem; transition: all 0.3s;
+        }
+        .btn-alianza:hover { background-color: white; color: var(--color-primario); }
+
+        /* HERO SECTION */
+        .hero-section {
+            background: linear-gradient(rgba(0,51,102,0.5), rgba(0,51,102,0.7)), url('https://images.unsplash.com/photo-1600596542815-2495db98dada?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover; background-position: center; min-height: 600px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center;
+        }
+        .hero-title { font-weight: 800; font-size: 3.5rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; }
+        
+        /* BUSCADOR */
+        .search-wrapper {
+            background-color: rgba(255, 255, 255, 0.95); padding: 30px; width: 90%; max-width: 1100px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-top: 5px solid var(--color-primario);
+        }
+        .form-select, .form-control { border-radius: 0; border: 1px solid #ddd; padding: 12px; font-size: 0.9rem; color: #555; }
+        .form-select:focus, .form-control:focus { border-color: var(--color-primario); box-shadow: none; }
+        .btn-buscar { 
+            background-color: var(--color-primario); color: white; width: 100%; height: 100%; font-weight: 700; border: none; border-radius: 0;
+            text-transform: uppercase; letter-spacing: 1px; transition: background 0.3s;
+        }
+        .btn-buscar:hover { background-color: #002244; color: white; }
+
+        /* SECCIONES */
+        section { padding: 80px 0; }
+        .section-title {
+            color: var(--color-primario); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; position: relative; display: inline-block; margin-bottom: 50px;
+        }
+        .section-title::after { content: ''; display: block; width: 60px; height: 3px; background-color: var(--color-primario); margin: 15px auto 0; }
+
+        /* LISTA DE SERVICIOS */
+        .lista-servicios li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .lista-servicios i {
+            color: var(--color-primario);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* TARJETAS */
+        .card-propiedad { border: none; border-radius: 0; background: white; box-shadow: 0 5px 20px rgba(0,0,0,0.05); transition: transform 0.3s; }
+        .card-propiedad:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .etiqueta-operacion { position: absolute; top: 20px; left: 20px; background: var(--color-primario); color: white; padding: 5px 15px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .card-body { padding: 25px; }
+        .precio { font-size: 1.5rem; font-weight: 700; color: var(--color-primario); }
+        .btn-contacto-card {
+            border: 1px solid var(--color-primario); color: var(--color-primario); background: transparent; width: 100%; padding: 10px;
+            font-weight: 600; text-transform: uppercase; font-size: 0.8rem; border-radius: 0; transition: all 0.3s;
+        }
+        .btn-contacto-card:hover { background: var(--color-primario); color: white; }
+
+        /* CLIENTES */
+        .clientes-section { background-color: white; }
+        .card-cliente { text-align: center; padding: 40px 20px; border: 1px solid #eee; background: #fff; }
+        .avatar-cliente { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 20px; border: 2px solid var(--color-primario); }
+        .estrellas { color: #f1c40f; margin-bottom: 15px; }
+
+        /* FOOTER */
+        footer { background-color: #1a1a1a; color: #bbb; font-size: 0.9rem; }
+        footer h5 { color: white; text-transform: uppercase; font-weight: 700; margin-bottom: 20px; letter-spacing: 1px; }
+        footer ul li { margin-bottom: 10px; }
+        footer i { color: var(--color-primario); margin-right: 10px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <img src="logo.png" alt="MG Logo" style="height: 60px; width: auto;">
+                <span>MGPropiedades</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center gap-2">
+                    <li class="nav-item"><a class="nav-link active" href="#">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#nosotros">Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#propiedades">Propiedades</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#proyectos">Proyectos</a></li> 
+                    
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-vender fw-bold" href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20quiero%20vender%20mi%20casa%20con%20ustedes" target="_blank">
+                            ¿Vendes tu casa?
+                        </a>
+                    </li>
+
+                    <li class="nav-item ms-3">
+                        <button class="btn btn-alianza" data-bs-toggle="modal" data-bs-target="#modalAlianza">
+                            Soy Corredor
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero-section">
+        <div class="container d-flex flex-column align-items-center w-100">
+            <h1 class="hero-title">Bienvenido a tu nueva propiedad</h1>
+            
+            <div class="search-wrapper">
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        <label class="small fw-bold text-muted mb-1 text-start d-block">UBICACIÓN</label>
+                        <input type="text" id="inputUbicacion" class="form-control" placeholder="Ej: Concepción, Lomas...">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold text-muted mb-1 text-start d-block">TIPO</label>
+                        <select class="form-select" id="filtroTipo">
+                            <option value="">Todos</option>
+                            <option value="Casa">Casa</option>
+                            <option value="Departamento">Departamento</option>
+                            <option value="Terreno">Terreno</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold text-muted mb-1 text-start d-block">OPERACIÓN</label>
+                        <select class="form-select" id="filtroOperacion" onchange="setOperacion(this.value)">
+                            <option value="Venta">Venta</option>
+                            <option value="Arriendo">Arriendo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-buscar" onclick="filtrarPropiedades()">
+                            <i class="bi bi-search"></i> BUSCAR PROPIEDAD
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="nosotros" style="background-color: #fff;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-4">
+                    <span class="text-uppercase fw-bold small" style="color: var(--color-primario);">Sobre Nosotros</span>
+                    <h2 class="fw-bold mb-4 display-6">Quiénes Somos</h2>
+                    
+                    <p class="text-muted lead"><strong>Somos MG Corredor de Propiedades</strong></p>
+                    <p class="text-muted">Tu corredora inmobiliaria de confianza, especializada en la compra, venta y arriendo de propiedades residenciales y comerciales. Contamos con 4 años de experiencia en el mercado, ofreciendo un servicio profesional, cercano y transparente, enfocado principalmente en la Región del Biobío con alcance a nivel nacional.</p>
+                    
+                    <hr class="my-4">
+
+                    <h5 class="fw-bold" style="color: var(--color-primario);">Nuestra Propuesta de Valor</h5>
+                    <p class="text-muted">Entregamos una asesoría completa e integral, acompañando a nuestros clientes desde la primera consulta hasta el cierre exitoso de cada operación. Nuestro objetivo es que cada proceso sea claro, seguro y eficiente.</p>
+
+                    <h5 class="fw-bold mt-4" style="color: var(--color-primario);">Nuestros Servicios</h5>
+                    <ul class="list-unstyled lista-servicios text-muted">
+                        <li><i class="bi bi-check-circle-fill"></i> Compra de propiedades</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Venta de propiedades</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Arriendo de propiedades</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Asesoría legal, comercial y administrativa</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Apoyo en procesos bancarios y notariales</li>
+                    </ul>
+
+                    <div class="mt-4 p-3 bg-light border-start border-5 border-primary">
+                        <p class="text-muted small m-0">
+                            <strong>Nuestro Compromiso:</strong> Trabajamos con ética, responsabilidad y profesionalismo. Nos comprometemos a proteger los intereses de nuestros clientes y a entregar un servicio ágil, transparente y confiable. <br>
+                            <em>"Tu tranquilidad inmobiliaria, en manos expertas"</em>
+                        </p>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-4 text-center">
+                            <i class="bi bi-patch-check fs-1" style="color: var(--color-primario);"></i>
+                            <p class="small fw-bold mt-2 text-uppercase">Certificados</p>
+                        </div>
+                        <div class="col-4 text-center">
+                            <i class="bi bi-diagram-3 fs-1" style="color: var(--color-primario);"></i>
+                            <p class="small fw-bold mt-2 text-uppercase">Red Regional</p>
+                        </div>
+                        <div class="col-4 text-center">
+                            <i class="bi bi-shield-lock fs-1" style="color: var(--color-primario);"></i>
+                            <p class="small fw-bold mt-2 text-uppercase">Seguridad</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="img-fluid shadow-lg" alt="Oficina MG">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="propiedades" style="background-color: #f4f4f4;">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Propiedades Destacadas</h2>
+                <p class="text-muted">Encuentra el espacio perfecto para ti</p>
+                <div class="mt-2">
+                    <span id="contador-propiedades" class="badge rounded-0 px-3 py-2" style="background-color: var(--color-primario);">Cargando catálogo...</span>
+                </div>
+            </div>
+            
+            <div class="row g-4" id="contenedor-propiedades">
+                </div>
+        </div>
+    </section>
+
+    <section id="clientes">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card-cliente">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Cliente" class="avatar-cliente">
+                        <div class="estrellas"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                        <p class="text-muted fst-italic">"Gestión impecable. Vendieron mi propiedad en tiempo récord y con total profesionalismo."</p>
+                        <h6 class="fw-bold mt-3 text-uppercase">María González</h6>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-cliente">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Cliente" class="avatar-cliente">
+                        <div class="estrellas"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                        <p class="text-muted fst-italic">"Excelente atención personalizada. Encontraron el departamento exacto que buscaba."</p>
+                        <h6 class="fw-bold mt-3 text-uppercase">Carlos Tapia</h6>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-cliente">
+                        <img src="https://images.unsplash.com/photo-1554151228-14d9def656ec?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Cliente" class="avatar-cliente">
+                        <div class="estrellas"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i></div>
+                        <p class="text-muted fst-italic">"Seriedad y compromiso. Recomiendo totalmente a MGPropiedades para invertir."</p>
+                        <h6 class="fw-bold mt-3 text-uppercase">Fernanda Lagos</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="proyectos" class="py-5 bg-dark text-white text-center">
+        <div class="container">
+            <h2 class="text-uppercase fw-bold mb-3">Proyectos Inmobiliarios</h2>
+            <p class="text-secondary">Próximamente nuevos desarrollos exclusivos en la región.</p>
+        </div>
+    </section>
+
+    <footer class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>MGPropiedades</h5>
+                    <p>Expertos en corretaje y gestión inmobiliaria en el Gran Concepción. Tu confianza es nuestro mayor activo.</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Navegación</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-decoration-none text-muted">Inicio</a></li>
+                        <li><a href="#nosotros" class="text-decoration-none text-muted">Nosotros</a></li>
+                        <li><a href="#propiedades" class="text-decoration-none text-muted">Propiedades</a></li>
+                        <li><a href="https://wa.me/56975575540" class="text-decoration-none text-muted">Vender mi casa</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Contacto</h5>
+                    <ul class="list-unstyled">
+                        <li id="footer-telefono-li"><i class="bi bi-whatsapp"></i> Cargando...</li>
+                        <li><i class="bi bi-envelope"></i> contacto@mgpropiedades.cl</li>
+                        <li><i class="bi bi-geo-alt"></i> Concepción, Chile</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-secondary mt-4">
+            <p class="text-center m-0 text-muted">&copy; 2024 MGPropiedades. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="modalAlianza" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-0 border-0">
+                <div class="modal-header border-0 bg-dark text-white">
+                    <h5 class="modal-title fw-bold text-uppercase">Alianza Inmobiliaria</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-5">
+                    <i class="bi bi-building text-dark mb-3" style="font-size: 3rem;"></i>
+                    <h3 class="fw-bold mb-3 text-uppercase">¿Eres Corredor?</h3>
+                    <p class="text-muted mb-4">Únete a nuestra red de colaboradores y potenciemos juntos el mercado inmobiliario.</p>
+                    <div class="d-grid gap-2">
+                        <button onclick="contactarAlianza()" class="btn btn-dark btn-lg rounded-0 text-uppercase">
+                            <i class="bi bi-whatsapp"></i> Contactar por WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // --- CONFIGURACIÓN PRINCIPAL ---
+        const TELEFONO_EMPRESA = "56975575540";
+        // -------------------------------
+
+        let todasLasPropiedades = [];
+        let operacionActual = 'Venta';
+
+        async function cargarPropiedades() {
+            try {
+                const res = await fetch('/api/propiedades');
+                todasLasPropiedades = await res.json();
+                filtrarPropiedades();
+            } catch (error) {
+                console.error("Error cargando datos:", error);
+                document.getElementById('contenedor-propiedades').innerHTML = '<p class="text-center text-muted w-100 py-5">No se pudo conectar con el servidor.</p>';
+            }
+        }
+
+        // Función para cambiar la operación desde el select del buscador
+        function setOperacion(op) {
+            operacionActual = op;
+        }
+
+        function filtrarPropiedades() {
+            const ubicacionBusqueda = document.getElementById('inputUbicacion').value.toLowerCase();
+            const tipoBusqueda = document.getElementById('filtroTipo').value;
+            
+            const filtradas = todasLasPropiedades.filter(p => {
+                const coincideOperacion = p.operacion === operacionActual;
+                const coincideUbicacion = p.ubicacion.toLowerCase().includes(ubicacionBusqueda) || 
+                                          p.titulo.toLowerCase().includes(ubicacionBusqueda);
+                const coincideTipo = tipoBusqueda === "" ? true : p.tipo === tipoBusqueda;
+
+                return coincideOperacion && coincideUbicacion && coincideTipo;
+            });
+
+            renderizar(filtradas);
+        }
+
+        function renderizar(lista) {
+            const contenedor = document.getElementById('contenedor-propiedades');
+            const contador = document.getElementById('contador-propiedades');
+            
+            contador.innerText = `${lista.length} Propiedades en ${operacionActual}`;
+            contenedor.innerHTML = '';
+
+            if(lista.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-house-slash display-4 text-muted"></i>
+                        <h4 class="mt-4 fw-bold text-muted">No se encontraron resultados</h4>
+                        <p class="text-secondary">Intenta cambiar los filtros de búsqueda.</p>
+                    </div>`;
+                return;
+            }
+
+            lista.forEach(p => {
+                const mensaje = `Hola MGPropiedades, me interesa la propiedad: ${p.titulo} (${p.ubicacion})`;
+                const linkWsp = `https://wa.me/${TELEFONO_EMPRESA}?text=${encodeURIComponent(mensaje)}`;
+                
+                contenedor.innerHTML += `
+                    <div class="col-md-4">
+                        <div class="card card-propiedad h-100">
+                            <div class="position-relative">
+                                <span class="etiqueta-operacion">${p.operacion}</span>
+                                <img src="${p.imagen}" class="card-img-top" style="height: 250px; object-fit: cover;">
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="mb-2 text-muted small text-uppercase fw-bold">
+                                    <i class="bi bi-geo-alt"></i> ${p.ubicacion}
+                                </div>
+                                <h5 class="card-title fw-bold mb-3 text-truncate">${p.titulo}</h5>
+                                <div class="row g-0 mb-3 text-center text-muted small border-top border-bottom py-2">
+                                    <div class="col border-end"><i class="bi bi-house"></i> ${p.tipo}</div>
+                                    <div class="col border-end"><i class="bi bi-door-closed"></i> ${p.dormitorios}</div>
+                                    <div class="col"><i class="bi bi-droplet"></i> ${p.banos}</div>
+                                </div>
+                                <h4 class="precio mb-3">${p.precio}</h4>
+                                <a href="${linkWsp}" target="_blank" class="btn btn-contacto-card mt-auto">
+                                    <i class="bi bi-whatsapp"></i> Ver Detalles
+                                </a>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function contactarAlianza() {
+            const mensaje = "Hola MGPropiedades, soy corredor y me gustaría colaborar con ustedes.";
+            window.open(`https://wa.me/${TELEFONO_EMPRESA}?text=${encodeURIComponent(mensaje)}`, '_blank');
+        }
+
+        document.getElementById('filtroOperacion').value = operacionActual; 
+        
+        cargarPropiedades();
+        document.getElementById('footer-telefono-li').innerHTML = `<i class="bi bi-whatsapp"></i> +${TELEFONO_EMPRESA}`;
+    </script>
+</body>
+</html>
