@@ -15,7 +15,8 @@ async function main() {
 
   // 2. Crear USUARIO ADMINISTRADOR
   // Contraseña: "admin123"
-  const passwordEncriptada = await bcrypt.hash('admin123', 10);
+  const passwordReal = process.env.ADMIN_PASSWORD || 'admin123'; 
+  const passwordEncriptada = await bcrypt.hash(passwordReal, 10);
   
   await prisma.usuario.create({
     data: {
