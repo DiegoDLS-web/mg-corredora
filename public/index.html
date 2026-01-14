@@ -397,28 +397,73 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const TELEFONO_EMPRESA = "56975575540";
         const API_URL = '/api'; 
 
         let todasLasPropiedades = [];
-        // --- NUEVO: Inicializamos vacío para que muestre TODO al cargar ---
         let operacionActual = ''; 
-        
+        let valorUF_Hoy = 0; // Aquí guardaremos el valor de la UF
+
         let modalDetalle; 
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             modalDetalle = new bootstrap.Modal(document.getElementById('modalDetalle'));
-            cargarPropiedades();
             document.getElementById('footer-telefono-li').innerHTML = `<i class="bi bi-whatsapp"></i> +${TELEFONO_EMPRESA}`;
+            
+            // 1. Obtener valor de la UF primero
+            await obtenerValorUF();
+            // 2. Cargar propiedades
+            cargarPropiedades();
         });
+
+        // --- FUNCIÓN NUEVA: Obtener UF desde mindicador.cl ---
+        async function obtenerValorUF() {
+            try {
+                const res = await fetch('https://mindicador.cl/api/uf');
+                const data = await res.json();
+                valorUF_Hoy = data.serie[0].valor; // Valor numérico ej: 38000.55
+                console.log("Valor UF Hoy:", valorUF_Hoy);
+            } catch (error) {
+                console.error("Error obteniendo UF, usaremos valor aproximado:", error);
+                valorUF_Hoy = 38000; // Valor de respaldo si falla la API
+            }
+        }
+
+        // --- FUNCIÓN NUEVA: Formateador de Precio ---
+        function formatearPrecio(precioString) {
+            // Si el precio no empieza con $, asumimos que ya es UF o texto libre
+            if (!precioString.includes('$')) return precioString;
+
+            // Limpiamos el string para obtener solo el número (quitamos $ y puntos)
+            const pesosLimpios = parseInt(precioString.replace(/\D/g, ''));
+            
+            if (!valorUF_Hoy || isNaN(pesosLimpios)) return precioString;
+
+            // Calculamos UF
+            const valorEnUF = (pesosLimpios / valorUF_Hoy).toFixed(0); // Sin decimales
+            
+            // Retornamos el formato: "UF 3.000 ($115.000.000)"
+            // Usamos Intl.NumberFormat para poner puntos a la UF
+            const ufFormateada = new Intl.NumberFormat('es-CL').format(valorEnUF);
+            
+            return `<span class="text-primary">UF ${ufFormateada}</span> <small class="text-muted d-block fs-6">${precioString}</small>`;
+        }
+        
+        // --- FUNCIÓN PARA EL MODAL (Solo UF grande) ---
+        function formatearPrecioModal(precioString) {
+            if (!precioString.includes('$')) return precioString;
+            const pesosLimpios = parseInt(precioString.replace(/\D/g, ''));
+            const valorEnUF = (pesosLimpios / valorUF_Hoy).toFixed(0);
+            const ufFormateada = new Intl.NumberFormat('es-CL').format(valorEnUF);
+            return `UF ${ufFormateada}`;
+        }
 
         async function cargarPropiedades() {
             try {
                 const res = await fetch(`${API_URL}/propiedades`);
                 todasLasPropiedades = await res.json();
-                // Establece el select en el valor actual (ahora puede ser vacío)
                 document.getElementById('filtroOperacion').value = operacionActual; 
                 filtrarPropiedades();
             } catch (error) {
@@ -436,8 +481,6 @@
             const tipo = document.getElementById('filtroTipo').value;
             
             const filtradas = todasLasPropiedades.filter(p => {
-                // --- NUEVO: Lógica para permitir "Ver Todo" ---
-                // Si operacionActual es vacío (''), permite pasar todo. Si no, filtra.
                 const coincideOperacion = operacionActual === "" || p.operacion === operacionActual;
 
                 return coincideOperacion &&
@@ -450,11 +493,8 @@
 
         function renderizar(lista) {
             const contenedor = document.getElementById('contenedor-propiedades');
-            
-            // --- NUEVO: Texto dinámico para el contador ---
             const textoOperacion = operacionActual === "" ? "Total" : operacionActual;
             document.getElementById('contador-propiedades').innerText = `${lista.length} Propiedades (${textoOperacion})`;
-            
             contenedor.innerHTML = '';
 
             if(lista.length === 0) {
@@ -462,7 +502,6 @@
                     <div class="col-12 text-center py-5">
                         <i class="bi bi-house-slash display-4 text-muted"></i>
                         <h4 class="mt-4 fw-bold text-muted">No se encontraron resultados</h4>
-                        <p class="text-secondary">Intenta cambiar los filtros de búsqueda.</p>
                     </div>`;
                 return;
             }
@@ -470,6 +509,9 @@
             lista.forEach((p) => {
                 const fotos = p.imagen ? p.imagen.split(/[,\s\n]+/) : ['https://via.placeholder.com/400'];
                 const fotoPrincipal = fotos[0]; 
+                
+                // --- AQUI USAMOS EL NUEVO FORMATEADOR ---
+                const precioDisplay = formatearPrecio(p.precio);
 
                 const card = document.createElement('div');
                 card.className = 'col-md-4';
@@ -487,7 +529,9 @@
                                 <div class="col border-end"><i class="bi bi-door-closed"></i> ${p.dormitorios}</div>
                                 <div class="col"><i class="bi bi-droplet"></i> ${p.banos}</div>
                             </div>
-                            <h4 class="precio mb-3">${p.precio}</h4>
+                            
+                            <h4 class="precio mb-3">${precioDisplay}</h4>
+                            
                             <button class="btn btn-contacto-card mt-auto fw-bold">
                                 <i class="bi bi-eye"></i> VER DETALLES
                             </button>
@@ -502,14 +546,18 @@
 
         function abrirModal(propiedad) {
             document.getElementById('modalTitulo').innerText = propiedad.titulo;
-            document.getElementById('modalPrecio').innerText = propiedad.precio;
+            
+            // Usamos el formateador especial para el modal (muestra UF limpia)
+            // Si prefieres ver Pesos en el modal, cambia formatearPrecioModal por formatearPrecio
+            document.getElementById('modalPrecio').innerHTML = formatearPrecio(propiedad.precio);
+            
             document.getElementById('modalOperacion').innerText = propiedad.operacion;
             document.getElementById('modalDorm').innerText = propiedad.dormitorios;
             document.getElementById('modalBanos').innerText = propiedad.banos;
             document.getElementById('modalTipo').innerText = propiedad.tipo;
             document.getElementById('modalUbicacion').innerText = propiedad.ubicacion;
 
-            const mensaje = `Hola MGPropiedades, vi en la web la propiedad: ${propiedad.titulo} (${propiedad.precio}). Me gustaría más información.`;
+            const mensaje = `Hola MGPropiedades, vi en la web la propiedad: ${propiedad.titulo}. Me gustaría más información.`;
             document.getElementById('btnWspFinal').href = `https://wa.me/${TELEFONO_EMPRESA}?text=${encodeURIComponent(mensaje)}`;
 
             const carouselInner = document.getElementById('carouselInner');

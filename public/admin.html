@@ -69,10 +69,26 @@
                                 </div>
                             </div>
 
-                            <div class="mb-2">
-                                <label class="fw-bold small">Precio (ej: UF 3.000)</label>
-                                <input type="text" id="precio" class="form-control" required>
-                            </div>
+<div class="mb-2">
+    <label class="fw-bold small">Precio (en Pesos Chilenos)</label>
+    <input type="text" id="precio" class="form-control" placeholder="$0" required onkeyup="formatoPesos(this)">
+    <div class="form-text text-muted small">Ingresa el valor en pesos, se convertirá a UF automáticamente en la web.</div>
+</div>
+
+<script>
+    function formatoPesos(input) {
+        // Eliminar cualquier caracter que no sea número
+        let valor = input.value.replace(/\D/g, "");
+        
+        // Si hay valor, formatear con puntos y signo peso
+        if (valor) {
+            // Truco de regex para poner puntos de miles
+            valor = "$" + valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+        
+        input.value = valor;
+    }
+</script>
                             
                             <div class="mb-2">
                                 <label class="fw-bold small">Ubicación</label>
