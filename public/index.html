@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MGPropiedades | Gestión Inmobiliaria</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -57,7 +60,7 @@
 
         /* HERO SECTION */
         .hero-section {
-            background: linear-gradient(rgba(0,51,102,0.5), rgba(0,51,102,0.7)), url('https://images.unsplash.com/photo-1600596542815-2495db98dada?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+            background: linear-gradient(rgba(0,51,102,0.85), rgba(0,51,102,0.9)), url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
             background-size: cover; background-position: center; min-height: 600px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center;
         }
@@ -99,7 +102,7 @@
         }
         .btn-contacto-card:hover { background: var(--color-primario); color: white; }
 
-        /* NUEVO: ESTILOS PARA EL MODAL DE GALERÍA */
+        /* ESTILOS PARA EL MODAL DE GALERÍA */
         .carousel-item img { height: 400px; object-fit: contain; background-color: #000; }
         .modal-detalles-content { border-radius: 0; border: none; overflow: hidden; }
         .modal-header { border-bottom: none; background-color: #fff; }
@@ -177,6 +180,7 @@
                     <div class="col-md-3">
                         <label class="small fw-bold text-muted mb-1 text-start d-block">OPERACIÓN</label>
                         <select class="form-select" id="filtroOperacion" onchange="setOperacion(this.value)">
+                            <option value="">Ver Todo</option>
                             <option value="Venta">Venta</option>
                             <option value="Arriendo">Arriendo</option>
                         </select>
@@ -191,6 +195,21 @@
         </div>
     </header>
 
+    <section id="propiedades" style="background-color: #f4f4f4;">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Propiedades Destacadas</h2>
+                <p class="text-muted">Encuentra el espacio perfecto para ti</p>
+                <div class="mt-2">
+                    <span id="contador-propiedades" class="badge rounded-0 px-3 py-2" style="background-color: var(--color-primario);">Cargando catálogo...</span>
+                </div>
+            </div>
+            
+            <div class="row g-4" id="contenedor-propiedades">
+                </div>
+        </div>
+    </section>
+
     <section id="nosotros" style="background-color: #fff;">
         <div class="container">
             <div class="row align-items-center">
@@ -199,7 +218,7 @@
                     <h2 class="fw-bold mb-4 display-6">Quiénes Somos</h2>
                     
                     <p class="text-muted lead"><strong>Somos MG Corredor de Propiedades</strong></p>
-                    <p class="text-muted">Tu corredora inmobiliaria de confianza, especializada en la compra, venta y arriendo de propiedades residenciales y comerciales. Contamos con 4 años de experiencia en el mercado, ofreciendo un servicio profesional, cercano y transparente, enfocado principalmente en la Región del Biobío con alcance a nivel nacional.</p>
+                    <p class="text-muted">Tu corredora inmobiliaria de confianza, especializada en la compra, venta y arriendo de propiedades residenciales y comerciales. Contamos con años de experiencia en el mercado, ofreciendo un servicio profesional, cercano y transparente, enfocado principalmente en la Región del Biobío con alcance a nivel nacional.</p>
                     
                     <hr class="my-4">
 
@@ -241,21 +260,6 @@
                     <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="img-fluid shadow-lg" alt="Oficina MG">
                 </div>
             </div>
-        </div>
-    </section>
-
-    <section id="propiedades" style="background-color: #f4f4f4;">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Propiedades Destacadas</h2>
-                <p class="text-muted">Encuentra el espacio perfecto para ti</p>
-                <div class="mt-2">
-                    <span id="contador-propiedades" class="badge rounded-0 px-3 py-2" style="background-color: var(--color-primario);">Cargando catálogo...</span>
-                </div>
-            </div>
-            
-            <div class="row g-4" id="contenedor-propiedades">
-                </div>
         </div>
     </section>
 
@@ -320,7 +324,7 @@
                     <h5>Contacto</h5>
                     <ul class="list-unstyled">
                         <li id="footer-telefono-li"><i class="bi bi-whatsapp"></i> Cargando...</li>
-                        <li><i class="bi bi-envelope"></i> contacto@mgpropiedades.cl</li>
+                        <li><i class="bi bi-envelope"></i> mgcorredordepropiedades@gmail.com</li>
                         <li><i class="bi bi-geo-alt"></i> Concepción, Chile</li>
                     </ul>
                 </div>
@@ -396,12 +400,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const TELEFONO_EMPRESA = "56975575540";
-        const API_URL = '/api'; // Ruta relativa corregida
+        const API_URL = '/api'; 
 
         let todasLasPropiedades = [];
-        let operacionActual = 'Venta';
+        // --- NUEVO: Inicializamos vacío para que muestre TODO al cargar ---
+        let operacionActual = ''; 
         
-        // Inicializar el Modal de Bootstrap
         let modalDetalle; 
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -414,6 +418,7 @@
             try {
                 const res = await fetch(`${API_URL}/propiedades`);
                 todasLasPropiedades = await res.json();
+                // Establece el select en el valor actual (ahora puede ser vacío)
                 document.getElementById('filtroOperacion').value = operacionActual; 
                 filtrarPropiedades();
             } catch (error) {
@@ -431,7 +436,11 @@
             const tipo = document.getElementById('filtroTipo').value;
             
             const filtradas = todasLasPropiedades.filter(p => {
-                return p.operacion === operacionActual &&
+                // --- NUEVO: Lógica para permitir "Ver Todo" ---
+                // Si operacionActual es vacío (''), permite pasar todo. Si no, filtra.
+                const coincideOperacion = operacionActual === "" || p.operacion === operacionActual;
+
+                return coincideOperacion &&
                        (p.ubicacion.toLowerCase().includes(ubicacion) || p.titulo.toLowerCase().includes(ubicacion)) &&
                        (tipo === "" || p.tipo === tipo);
             });
@@ -441,7 +450,11 @@
 
         function renderizar(lista) {
             const contenedor = document.getElementById('contenedor-propiedades');
-            document.getElementById('contador-propiedades').innerText = `${lista.length} Propiedades en ${operacionActual}`;
+            
+            // --- NUEVO: Texto dinámico para el contador ---
+            const textoOperacion = operacionActual === "" ? "Total" : operacionActual;
+            document.getElementById('contador-propiedades').innerText = `${lista.length} Propiedades (${textoOperacion})`;
+            
             contenedor.innerHTML = '';
 
             if(lista.length === 0) {
@@ -455,10 +468,8 @@
             }
 
             lista.forEach((p) => {
-                // TRUCO: Convertimos el texto largo en un array de fotos
-                // Separamos por comas, saltos de línea o espacios
                 const fotos = p.imagen ? p.imagen.split(/[,\s\n]+/) : ['https://via.placeholder.com/400'];
-                const fotoPrincipal = fotos[0]; // La primera para la tarjeta
+                const fotoPrincipal = fotos[0]; 
 
                 const card = document.createElement('div');
                 card.className = 'col-md-4';
@@ -484,15 +495,12 @@
                     </div>
                 `;
                 
-                // Asignar el click para abrir el modal pasando EL OBJETO COMPLETO 'p'
                 card.querySelector('.card-propiedad').onclick = () => abrirModal(p);
-
                 contenedor.appendChild(card);
             });
         }
 
         function abrirModal(propiedad) {
-            // 1. Llenar textos
             document.getElementById('modalTitulo').innerText = propiedad.titulo;
             document.getElementById('modalPrecio').innerText = propiedad.precio;
             document.getElementById('modalOperacion').innerText = propiedad.operacion;
@@ -501,27 +509,23 @@
             document.getElementById('modalTipo').innerText = propiedad.tipo;
             document.getElementById('modalUbicacion').innerText = propiedad.ubicacion;
 
-            // 2. Configurar botón WhatsApp dentro del modal
             const mensaje = `Hola MGPropiedades, vi en la web la propiedad: ${propiedad.titulo} (${propiedad.precio}). Me gustaría más información.`;
             document.getElementById('btnWspFinal').href = `https://wa.me/${TELEFONO_EMPRESA}?text=${encodeURIComponent(mensaje)}`;
 
-            // 3. Generar Carousel de Fotos
             const carouselInner = document.getElementById('carouselInner');
             carouselInner.innerHTML = '';
             
-            // Separamos las fotos nuevamente
             const fotos = propiedad.imagen ? propiedad.imagen.split(/[,\s\n]+/) : [];
             
             fotos.forEach((fotoUrl, i) => {
-                if(fotoUrl && fotoUrl.length > 5) { // Validar que no sea un string vacío
+                if(fotoUrl && fotoUrl.length > 5) { 
                     const div = document.createElement('div');
-                    div.className = `carousel-item ${i === 0 ? 'active' : ''}`; // El primero debe ser active
+                    div.className = `carousel-item ${i === 0 ? 'active' : ''}`;
                     div.innerHTML = `<img src="${fotoUrl}" class="d-block w-100" alt="Foto ${i}">`;
                     carouselInner.appendChild(div);
                 }
             });
 
-            // 4. Mostrar Modal
             modalDetalle.show();
         }
 
