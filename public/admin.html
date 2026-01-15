@@ -28,26 +28,34 @@
                 <button type="submit" class="btn btn-primary w-100">Ingresar</button>
             </form>
             <p id="errorMsg" class="text-danger mt-3 small"></p>
+            <a href="/" class="text-decoration-none text-muted small mt-4 d-block">
+    <i class="bi bi-arrow-left"></i> Volver al Inicio
+</a>
         </div>
     </div>
 
-    <div id="dashboardSection" class="dashboard-container container py-5">
+<div id="dashboardSection" class="dashboard-container container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Panel de Control</h2>
-            <button onclick="cerrarSesion()" class="btn btn-outline-danger btn-sm">Cerrar Sesión</button>
+            <div class="d-flex align-items-center gap-3">
+                <h2>Panel de Control</h2>
+                <a href="/" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i> Ver Sitio Web
+                </a>
+            </div>
+            
+            <button onclick="cerrarSesion()" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+            </button>
         </div>
 
         <div class="row">
+            
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm border-0">
-                    <div class="card-header bg-primary text-white fw-bold d-flex justify-content-between align-items-center">
-                        <span id="formTitle">Nueva Propiedad</span>
-                        <button id="btnCancelar" onclick="cancelarEdicion()" class="btn btn-sm btn-light py-0" style="display: none;">Cancelar</button>
-                    </div>
+                    <div class="card-header bg-primary text-white fw-bold">Nueva Propiedad</div>
                     <div class="card-body">
                         <form id="propiedadForm">
                             <input type="hidden" id="token"> 
-                            <input type="hidden" id="editId">
                             
                             <div class="mb-2">
                                 <label class="fw-bold small">Título</label>
@@ -73,18 +81,19 @@
                             </div>
 
                             <div class="mb-2">
-                                <label class="fw-bold small">Precio (en Pesos)</label>
+                                <label class="fw-bold small">Precio (en Pesos Chilenos)</label>
                                 <input type="text" id="precio" class="form-control" placeholder="$0" required onkeyup="formatoPesos(this)">
+                                <div class="form-text text-muted small">Ingresa el valor en pesos, se convertirá a UF automáticamente en la web.</div>
                             </div>
                             
                             <div class="mb-2">
                                 <label class="fw-bold small">Ubicación</label>
                                 <input type="text" id="ubicacion" class="form-control" required>
                             </div>
-
+                            
                             <div class="mb-2">
                                 <label class="fw-bold small">Descripción</label>
-                                <textarea id="descripcion" class="form-control" rows="3" placeholder="Detalles de la propiedad..."></textarea>
+                                <textarea id="descripcion" class="form-control" rows="2" placeholder="Detalles de la propiedad..."></textarea>
                             </div>
 
                             <div class="row mb-2">
@@ -100,10 +109,10 @@
 
                             <div class="mb-3">
                                 <label class="fw-bold small">URLs de Imágenes</label>
-                                <textarea id="imagen" class="form-control" rows="3" placeholder="Links separados por coma..." required></textarea>
+                                <textarea id="imagen" class="form-control" rows="4" placeholder="Links separados por coma..." required></textarea>
                             </div>
                             
-                            <button type="submit" id="btnSubmit" class="btn btn-success w-100">Publicar Propiedad</button>
+                            <button type="submit" class="btn btn-success w-100">Publicar Propiedad</button>
                         </form>
                     </div>
                 </div>
@@ -114,8 +123,8 @@
                 <div id="listaAdmin" class="row g-3">
                     </div>
             </div>
-        </div>
-    </div>
+
+        </div> </div>
 
     <script>
         const API_URL = '/api';
