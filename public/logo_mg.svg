@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 100" width="140" height="100">
+  <defs>
+    <linearGradient id="gradBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#003366;stop-opacity:1" /> <stop offset="100%" style="stop-color:#2a5d8f;stop-opacity:1" /> </linearGradient>
+  </defs>
+
+  <style>
+    /* Tipografía Serif (Times New Roman) para que se parezca a tu logo original */
+    .letra { 
+      font-family: 'Times New Roman', serif; 
+      font-weight: bold; 
+      font-size: 110px; 
+    }
+  </style>
+
+  <text x="10" y="85" class="letra" fill="url(#gradBlue)">M</text>
+  
+  <text x="75" y="85" class="letra" fill="black">G</text>
+</svg>
