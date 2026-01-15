@@ -384,8 +384,11 @@
                             <div class="col border-end"><strong><i class="bi bi-droplet"></i></strong> <span id="modalBanos"></span> Baños</div>
                             <div class="col"><strong><i class="bi bi-house"></i></strong> <span id="modalTipo"></span></div>
                         </div>
-                        <p class="text-muted"><i class="bi bi-geo-alt-fill text-danger"></i> <span id="modalUbicacion"></span></p>
+                        <p class="text-muted mb-1"><i class="bi bi-geo-alt-fill text-danger"></i> <span id="modalUbicacion"></span></p>
                         
+                        <div id="modalDescripcion" class="mt-3 mb-4 p-3 bg-light border rounded">
+                            </div>
+
                         <div class="d-grid gap-2 mt-4">
                             <a href="#" id="btnWspFinal" target="_blank" class="btn btn-wsp-modal">
                                 <i class="bi bi-whatsapp"></i> Me interesa esta propiedad
@@ -547,8 +550,6 @@
         function abrirModal(propiedad) {
             document.getElementById('modalTitulo').innerText = propiedad.titulo;
             
-            // Usamos el formateador especial para el modal (muestra UF limpia)
-            // Si prefieres ver Pesos en el modal, cambia formatearPrecioModal por formatearPrecio
             document.getElementById('modalPrecio').innerHTML = formatearPrecio(propiedad.precio);
             
             document.getElementById('modalOperacion').innerText = propiedad.operacion;
@@ -556,6 +557,15 @@
             document.getElementById('modalBanos').innerText = propiedad.banos;
             document.getElementById('modalTipo').innerText = propiedad.tipo;
             document.getElementById('modalUbicacion').innerText = propiedad.ubicacion;
+            
+            // INYECTAR DESCRIPCIÓN
+            const descContainer = document.getElementById('modalDescripcion');
+            if(propiedad.descripcion && propiedad.descripcion.trim() !== "") {
+                descContainer.style.display = 'block';
+                descContainer.innerText = propiedad.descripcion;
+            } else {
+                descContainer.style.display = 'none';
+            }
 
             const mensaje = `Hola MGPropiedades, vi en la web la propiedad: ${propiedad.titulo}. Me gustaría más información.`;
             document.getElementById('btnWspFinal').href = `https://wa.me/${TELEFONO_EMPRESA}?text=${encodeURIComponent(mensaje)}`;

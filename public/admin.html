@@ -10,7 +10,6 @@
         body { background-color: #f0f2f5; }
         .login-container { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .dashboard-container { display: none; }
-        /* Ajuste para ver la imagen en la lista del admin */
         .admin-img-preview { height: 150px; object-fit: cover; width: 100%; }
     </style>
 </head>
@@ -41,10 +40,14 @@
         <div class="row">
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm border-0">
-                    <div class="card-header bg-primary text-white fw-bold">Nueva Propiedad</div>
+                    <div class="card-header bg-primary text-white fw-bold d-flex justify-content-between align-items-center">
+                        <span id="formTitle">Nueva Propiedad</span>
+                        <button id="btnCancelar" onclick="cancelarEdicion()" class="btn btn-sm btn-light py-0" style="display: none;">Cancelar</button>
+                    </div>
                     <div class="card-body">
                         <form id="propiedadForm">
                             <input type="hidden" id="token"> 
+                            <input type="hidden" id="editId">
                             
                             <div class="mb-2">
                                 <label class="fw-bold small">Título</label>
@@ -69,30 +72,19 @@
                                 </div>
                             </div>
 
-<div class="mb-2">
-    <label class="fw-bold small">Precio (en Pesos Chilenos)</label>
-    <input type="text" id="precio" class="form-control" placeholder="$0" required onkeyup="formatoPesos(this)">
-    <div class="form-text text-muted small">Ingresa el valor en pesos, se convertirá a UF automáticamente en la web.</div>
-</div>
-
-<script>
-    function formatoPesos(input) {
-        // Eliminar cualquier caracter que no sea número
-        let valor = input.value.replace(/\D/g, "");
-        
-        // Si hay valor, formatear con puntos y signo peso
-        if (valor) {
-            // Truco de regex para poner puntos de miles
-            valor = "$" + valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
-        
-        input.value = valor;
-    }
-</script>
+                            <div class="mb-2">
+                                <label class="fw-bold small">Precio (en Pesos)</label>
+                                <input type="text" id="precio" class="form-control" placeholder="$0" required onkeyup="formatoPesos(this)">
+                            </div>
                             
                             <div class="mb-2">
                                 <label class="fw-bold small">Ubicación</label>
                                 <input type="text" id="ubicacion" class="form-control" required>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="fw-bold small">Descripción</label>
+                                <textarea id="descripcion" class="form-control" rows="3" placeholder="Detalles de la propiedad..."></textarea>
                             </div>
 
                             <div class="row mb-2">
@@ -108,11 +100,10 @@
 
                             <div class="mb-3">
                                 <label class="fw-bold small">URLs de Imágenes</label>
-                                <textarea id="imagen" class="form-control" rows="4" placeholder="Pega los links aquí (separados por coma o uno por línea). La primera será la portada." required></textarea>
-                                <div class="form-text text-muted small">Ej: https://foto1.jpg, https://foto2.jpg</div>
+                                <textarea id="imagen" class="form-control" rows="3" placeholder="Links separados por coma..." required></textarea>
                             </div>
                             
-                            <button type="submit" class="btn btn-success w-100">Publicar Propiedad</button>
+                            <button type="submit" id="btnSubmit" class="btn btn-success w-100">Publicar Propiedad</button>
                         </form>
                     </div>
                 </div>
@@ -127,7 +118,16 @@
     </div>
 
     <script>
-        const API_URL = '/api'; // Ruta relativa corregida
+        const API_URL = '/api';
+        let propiedadesGlobales = []; // Para tener acceso a los datos para editar
+
+        function formatoPesos(input) {
+            let valor = input.value.replace(/\D/g, "");
+            if (valor) {
+                valor = "$" + valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            }
+            input.value = valor;
+        }
 
         // --- LOGIN ---
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -162,16 +162,14 @@
             location.reload();
         }
 
-        // --- GESTIÓN ---
+        // --- GESTIÓN (CARGAR) ---
         async function cargarPropiedadesAdmin() {
             const res = await fetch(`${API_URL}/propiedades`);
-            const props = await res.json();
+            propiedadesGlobales = await res.json(); // Guardamos en variable global
             const lista = document.getElementById('listaAdmin');
             lista.innerHTML = '';
 
-            props.forEach(p => {
-                // TRUCO: Tomamos solo la primera foto para mostrar en el admin
-                // Separamos por comas, saltos de línea o espacios
+            propiedadesGlobales.forEach(p => {
                 const primeraFoto = p.imagen ? p.imagen.split(/[,\s\n]+/)[0] : '';
 
                 lista.innerHTML += `
@@ -185,9 +183,16 @@
                                     <div class="card-body p-2">
                                         <h6 class="card-title text-truncate">${p.titulo}</h6>
                                         <p class="card-text small m-0 text-muted">${p.precio} - ${p.operacion}</p>
-                                        <button onclick="eliminarPropiedad(${p.id})" class="btn btn-danger btn-sm mt-2">
-                                            <i class="bi bi-trash"></i> Eliminar
-                                        </button>
+                                        
+                                        <div class="mt-2">
+                                            <button onclick="prepararEdicion(${p.id})" class="btn btn-warning btn-sm text-white">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </button>
+                                            <button onclick="eliminarPropiedad(${p.id})" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -197,49 +202,96 @@
             });
         }
 
-        // CREAR
+        // --- CREAR / EDITAR (SUBMIT) ---
         document.getElementById('propiedadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('adminToken');
+            const editId = document.getElementById('editId').value;
             
-            // PROCESAMIENTO DE IMÁGENES:
-            // 1. Obtener valor del textarea
-            // 2. Reemplazar saltos de línea por comas
-            // 3. Limpiar espacios extra
             let rawImages = document.getElementById('imagen').value;
             let cleanImages = rawImages.replace(/\n/g, ',').trim();
 
-            const nuevaPropiedad = {
+            const datosPropiedad = {
                 titulo: document.getElementById('titulo').value,
                 operacion: document.getElementById('operacion').value,
                 tipo: document.getElementById('tipo').value,
                 precio: document.getElementById('precio').value,
                 ubicacion: document.getElementById('ubicacion').value,
+                descripcion: document.getElementById('descripcion').value, // NUEVO
                 dormitorios: parseInt(document.getElementById('dormitorios').value) || 0,
                 banos: parseInt(document.getElementById('banos').value) || 0,
-                imagen: cleanImages, // Enviamos todas las fotos como un solo texto largo
+                imagen: cleanImages,
                 corredora: "MGPropiedades"
             };
 
-            const res = await fetch(`${API_URL}/propiedades`, {
-                method: 'POST',
+            let url = `${API_URL}/propiedades`;
+            let method = 'POST';
+
+            // Si hay ID, es edición
+            if (editId) {
+                url = `${API_URL}/propiedades/${editId}`;
+                method = 'PUT';
+            }
+
+            const res = await fetch(url, {
+                method: method,
                 headers: { 
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(nuevaPropiedad)
+                body: JSON.stringify(datosPropiedad)
             });
 
             if(res.ok) {
-                alert("Propiedad creada con éxito!");
-                document.getElementById('propiedadForm').reset();
+                alert(editId ? "Propiedad actualizada!" : "Propiedad creada!");
+                cancelarEdicion(); // Limpia el formulario
                 cargarPropiedadesAdmin();
             } else {
-                alert("Error al crear. Revisa la conexión o sesión.");
+                alert("Error al guardar.");
             }
         });
 
-        // ELIMINAR
+        // --- FUNCIONES DE EDICIÓN ---
+        function prepararEdicion(id) {
+            // Buscar la propiedad en la variable global
+            const p = propiedadesGlobales.find(prop => prop.id === id);
+            if(!p) return;
+
+            // Llenar formulario
+            document.getElementById('editId').value = p.id;
+            document.getElementById('titulo').value = p.titulo;
+            document.getElementById('operacion').value = p.operacion;
+            document.getElementById('tipo').value = p.tipo;
+            document.getElementById('precio').value = p.precio;
+            document.getElementById('ubicacion').value = p.ubicacion;
+            document.getElementById('descripcion').value = p.descripcion || ''; // Cargar descripcion
+            document.getElementById('dormitorios').value = p.dormitorios;
+            document.getElementById('banos').value = p.banos;
+            document.getElementById('imagen').value = p.imagen;
+
+            // Cambiar textos de botones
+            document.getElementById('formTitle').innerText = "Editar Propiedad";
+            document.getElementById('btnSubmit').innerText = "Guardar Cambios";
+            document.getElementById('btnSubmit').classList.remove('btn-success');
+            document.getElementById('btnSubmit').classList.add('btn-warning');
+            document.getElementById('btnCancelar').style.display = 'block';
+            
+            // Scroll arriba para ver el form
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarEdicion() {
+            document.getElementById('propiedadForm').reset();
+            document.getElementById('editId').value = '';
+            
+            document.getElementById('formTitle').innerText = "Nueva Propiedad";
+            document.getElementById('btnSubmit').innerText = "Publicar Propiedad";
+            document.getElementById('btnSubmit').classList.add('btn-success');
+            document.getElementById('btnSubmit').classList.remove('btn-warning');
+            document.getElementById('btnCancelar').style.display = 'none';
+        }
+
+        // --- ELIMINAR ---
         async function eliminarPropiedad(id) {
             if(!confirm("¿Eliminar propiedad permanentemente?")) return;
             const token = localStorage.getItem('adminToken');

@@ -17,6 +17,7 @@ model Propiedad {
   dormitorios Int
   banos       Int
   imagen      String
+  descripcion String?  // <--- NUEVO CAMPO AGREGADO
   corredora   String   @default("MGPropiedades")
   createdAt   DateTime @default(now())
 }

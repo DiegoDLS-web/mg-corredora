@@ -60,7 +60,29 @@ app.post('/api/propiedades', verificarToken, async (req, res) => {
         const nueva = await prisma.propiedad.create({ data: req.body });
         res.json(nueva);
     } catch (e) {
+        console.error(e);
         res.status(500).json({ error: "Error al crear" });
+    }
+});
+
+// EDITAR propiedad (Solo Admin) - NUEVA RUTA
+app.put('/api/propiedades/:id', verificarToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const datos = req.body;
+        
+        // Evitamos tocar el ID o createdAt
+        delete datos.id;
+        delete datos.createdAt;
+
+        const actualizada = await prisma.propiedad.update({
+            where: { id: parseInt(id) },
+            data: datos
+        });
+        res.json(actualizada);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Error al actualizar" });
     }
 });
 
