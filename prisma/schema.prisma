@@ -13,6 +13,7 @@ model Propiedad {
   operacion   String
   tipo        String
   precio      String
+  superficie  String?
   ubicacion   String
   dormitorios Int
   banos       Int
