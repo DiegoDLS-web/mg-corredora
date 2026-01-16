@@ -157,6 +157,22 @@
         footer h5 { color: white; text-transform: uppercase; font-weight: 700; margin-bottom: 20px; letter-spacing: 1px; }
         footer ul li { margin-bottom: 10px; }
         footer i { color: var(--color-primario); margin-right: 10px; }
+        /* --- EFECTO ZOOM EN FOTOS --- */
+        
+        /* 1. Aseguramos que la imagen no se salga del marco al crecer */
+        .card-propiedad .position-relative {
+            overflow: hidden;
+        }
+
+        /* 2. Preparamos la imagen para moverse suavemente */
+        .card-propiedad img {
+            transition: transform 0.5s ease; /* 0.5s es la duración, 'ease' es la suavidad */
+        }
+
+        /* 3. Al pasar el mouse sobre la tarjeta, la imagen crece un 10% */
+        .card-propiedad:hover img {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
