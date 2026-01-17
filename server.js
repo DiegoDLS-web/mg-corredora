@@ -8,44 +8,22 @@ const path = require('path');
 const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SECRET_KEY = "mi_secreto_super_seguro"; // En producción usa una variable de entorno
+const SECRET_KEY = "mi_secreto_super_seguro"; 
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// --- RUTAS PÚBLICAS ---
-
-// Obtener propiedades
-app.get('/api/propiedades', async (req, res) => {
-    try {
-        const { corredor } = req.query; 
-        
-        let filtro = {};
-        
-        // Filtro opcional por corredor
-        if (corredor && corredor !== 'null' && corredor !== 'undefined') {
-            filtro = { 
-                corredora: {
-                    equals: corredor,
-                    // mode: 'insensitive' // Descomentar si usas Postgres
-                }
-            };
-        }
-
-        const propiedades = await prisma.propiedad.findMany({ 
-            where: filtro,
-            orderBy: { createdAt: 'desc' } 
-        });
-        
-        res.json(propiedades);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error al obtener propiedades" });
-    }
+// --- RUTAS DE VISTAS ---
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// Login Unificado (Devuelve Rol)
+app.get('/panel-corredor', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'panel-corredor.html'));
+});
+
+// --- API: LOGIN (CON AUTO-REPARACIÓN PARA TI) ---
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     
@@ -57,8 +35,21 @@ app.post('/api/login', async (req, res) => {
         const valid = await bcrypt.compare(password, usuario.password);
         if (!valid) return res.status(401).json({ error: "Credenciales incorrectas" });
 
-        const userRole = usuario.rol || 'admin'; 
-        const userName = usuario.nombre || 'Administrador';
+        // --- BLOQUE DE AUTO-REPARACIÓN PARA EL ADMIN ---
+        // Si es TU correo, forzamos que seas Admin sí o sí.
+        if (email === 'admin@mgpropiedades.cl') {
+            if (usuario.rol !== 'admin') {
+                await prisma.usuario.update({
+                    where: { email },
+                    data: { rol: 'admin', nombre: 'Administrador MG' }
+                });
+                usuario.rol = 'admin'; // Actualizamos en memoria
+            }
+        }
+        // ------------------------------------------------
+
+        const userRole = usuario.rol || 'corredor'; 
+        const userName = usuario.nombre || 'Usuario';
 
         const token = jwt.sign({ 
             id: usuario.id, 
@@ -79,20 +70,32 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// --- RUTAS VISTAS ---
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+// --- API: PROPIEDADES (PÚBLICA) ---
+app.get('/api/propiedades', async (req, res) => {
+    try {
+        const { corredor } = req.query; 
+        let filtro = {};
+        
+        // Si piden filtrar por corredor (para el panel de corredor)
+        if (corredor && corredor !== 'null' && corredor !== 'undefined') {
+            filtro = { corredora: { equals: corredor } };
+        }
+
+        const propiedades = await prisma.propiedad.findMany({ 
+            where: filtro,
+            orderBy: { createdAt: 'desc' } 
+        });
+        
+        res.json(propiedades);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener propiedades" });
+    }
 });
 
-app.get('/panel-corredor', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'panel-corredor.html'));
-});
-
-// --- SEGURIDAD ---
+// --- MIDDLEWARE SEGURIDAD ---
 const verificarToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; 
-    
     if (!token) return res.status(401).json({ error: "Acceso denegado" });
 
     jwt.verify(token, SECRET_KEY, (err, user) => {
@@ -102,99 +105,77 @@ const verificarToken = (req, res, next) => {
     });
 };
 
-// --- RUTAS PROTEGIDAS ---
+// --- API: CREAR/EDITAR/BORRAR PROPIEDADES ---
 
-// Crear propiedad
 app.post('/api/propiedades', verificarToken, async (req, res) => {
     try {
         const datos = req.body;
-        // Si es corredor, forzamos la autoría
+        // Si es corredor, forzamos su nombre como autor
         if (req.user.rol === 'corredor') {
             datos.corredora = req.user.nombre; 
         }
+        // Si es admin, usa el nombre que venga (o por defecto MG)
         const nueva = await prisma.propiedad.create({ data: datos });
         res.json(nueva);
     } catch (e) {
-        console.error(e);
         res.status(500).json({ error: "Error al crear" });
     }
 });
 
-// Editar propiedad
 app.put('/api/propiedades/:id', verificarToken, async (req, res) => {
     try {
         const { id } = req.params;
         const datos = req.body;
         
-        // Corredor solo edita lo suyo
+        // Seguridad para Corredor: Solo edita lo suyo
         if (req.user.rol === 'corredor') {
-            const propExistente = await prisma.propiedad.findUnique({ where: { id: parseInt(id) } });
-            if (!propExistente || propExistente.corredora !== req.user.nombre) {
-                return res.status(403).json({ error: "No tienes permiso" });
+            const prop = await prisma.propiedad.findUnique({ where: { id: parseInt(id) } });
+            if (!prop || prop.corredora !== req.user.nombre) {
+                return res.status(403).json({ error: "No es tu propiedad" });
             }
         }
-
+        
         delete datos.id;
         delete datos.createdAt;
-
-        const actualizada = await prisma.propiedad.update({
-            where: { id: parseInt(id) },
-            data: datos
-        });
+        const actualizada = await prisma.propiedad.update({ where: { id: parseInt(id) }, data: datos });
         res.json(actualizada);
     } catch (e) {
-        console.error(e);
         res.status(500).json({ error: "Error al actualizar" });
     }
 });
 
-// Eliminar propiedad
 app.delete('/api/propiedades/:id', verificarToken, async (req, res) => {
     try {
         const { id } = req.params;
-
-        // Corredor solo borra lo suyo
+        // Seguridad para Corredor: Solo borra lo suyo
         if (req.user.rol === 'corredor') {
-            const propExistente = await prisma.propiedad.findUnique({ where: { id: parseInt(id) } });
-            if (!propExistente || propExistente.corredora !== req.user.nombre) {
-                return res.status(403).json({ error: "No tienes permiso" });
+            const prop = await prisma.propiedad.findUnique({ where: { id: parseInt(id) } });
+            if (!prop || prop.corredora !== req.user.nombre) {
+                return res.status(403).json({ error: "No es tu propiedad" });
             }
         }
-
         await prisma.propiedad.delete({ where: { id: parseInt(id) } });
-        res.json({ message: "Eliminada correctamente" });
+        res.json({ message: "Eliminada" });
     } catch (e) {
         res.status(500).json({ error: "Error al eliminar" });
     }
 });
 
-// --- GESTIÓN DE USUARIOS (Solo Admin) ---
+// --- API: CREAR USUARIOS (SOLO ADMIN) ---
 app.post('/api/usuarios', verificarToken, async (req, res) => {
+    if (req.user.rol !== 'admin') return res.status(403).json({ error: "Solo Admin" });
+
+    const { email, password, nombre } = req.body;
     try {
-        if (req.user.rol !== 'admin') {
-            return res.status(403).json({ error: "No tienes permisos de administrador" });
-        }
-
-        const { email, password, nombre } = req.body;
-
         const existe = await prisma.usuario.findUnique({ where: { email } });
-        if (existe) return res.status(400).json({ error: "Correo ya registrado" });
+        if (existe) return res.status(400).json({ error: "Correo ocupado" });
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        const nuevoUsuario = await prisma.usuario.create({
-            data: {
-                email,
-                password: hashedPassword,
-                nombre,
-                rol: 'corredor' 
-            }
+        const nuevo = await prisma.usuario.create({
+            data: { email, password: hashedPassword, nombre, rol: 'corredor' }
         });
-
-        res.json({ message: "Corredor creado", id: nuevoUsuario.id });
-
+        res.json({ message: "Creado", id: nuevo.id });
     } catch (e) {
-        console.error(e);
         res.status(500).json({ error: "Error al crear usuario" });
     }
 });

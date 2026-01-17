@@ -3,343 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Corredores - MGPropiedades</title>
+    <title>Portal Corredores</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="icon" href="rojo.png" type="image/png"> 
-    <style>
-        body { background-color: #f8f9fa; }
-        .corredor-header { background-color: #0d6efd; color: white; padding: 20px 0; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .img-preview { height: 150px; object-fit: cover; width: 100%; border-radius: 5px 0 0 5px; }
-        .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    </style>
+    <link rel="icon" href="rojo.png" type="image/png">
+    <style> body { background-color: #f8f9fa; } .img-prev { height: 100px; object-fit: cover; } </style>
 </head>
 <body>
-
-    <header class="corredor-header">
+    <header class="bg-primary text-white py-3 mb-4 shadow-sm">
         <div class="container d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                    <i class="bi bi-person-badge-fill fs-4"></i>
-                </div>
-                <div>
-                    <h4 class="m-0 fw-bold">Portal Corredores</h4>
-                    <small class="opacity-75" id="welcomeMsg">Cargando usuario...</small>
-                </div>
-            </div>
-            
-            <div class="d-flex gap-2">
-                <a href="/" target="_blank" class="btn btn-light btn-sm fw-bold text-primary">
-                    <i class="bi bi-globe"></i> Ver Web
-                </a>
-                <button onclick="cerrarSesion()" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-box-arrow-right"></i> Salir
-                </button>
+            <h4 class="m-0"><i class="bi bi-person-badge"></i> Panel Corredor</h4>
+            <div class="d-flex gap-2 align-items-center">
+                <span id="welcomeMsg" class="small fw-bold"></span>
+                <button onclick="logout()" class="btn btn-sm btn-light text-primary fw-bold">Salir</button>
             </div>
         </div>
     </header>
 
-    <div class="container pb-5">
+    <div class="container">
         <div class="row">
-            
             <div class="col-md-4 mb-4">
                 <div class="card sticky-top" style="top: 20px;">
-                    <div class="card-header bg-white fw-bold border-bottom-0 pt-3">
-                        <i class="bi bi-plus-circle text-primary"></i> <span id="formTitle">Publicar Propiedad</span>
-                    </div>
+                    <div class="card-header bg-white fw-bold" id="formTitle">Publicar Propiedad</div>
                     <div class="card-body">
                         <form id="propiedadForm">
-                            <input type="hidden" id="editId"> 
-                            
-                            <div class="mb-2">
-                                <label class="fw-bold small text-secondary">Título del Anuncio</label>
-                                <input type="text" id="titulo" class="form-control" placeholder="Ej: Casa en San Pedro..." required>
-                            </div>
-                            
+                            <input type="hidden" id="editId">
+                            <div class="mb-2"><input type="text" id="titulo" class="form-control" placeholder="Título" required></div>
                             <div class="row mb-2">
-                                <div class="col">
-                                    <label class="fw-bold small text-secondary">Operación</label>
-                                    <select id="operacion" class="form-select">
-                                        <option>Venta</option>
-                                        <option>Arriendo</option>
-                                    </select>
-                                </div>
-                                <div class="col">
-                                    <label class="fw-bold small text-secondary">Tipo</label>
-                                    <select id="tipo" class="form-select">
-                                        <option>Casa</option>
-                                        <option>Departamento</option>
-                                        <option>Terreno</option>
-                                    </select>
-                                </div>
+                                <div class="col"><select id="operacion" class="form-select"><option>Venta</option><option>Arriendo</option></select></div>
+                                <div class="col"><select id="tipo" class="form-select"><option>Casa</option><option>Departamento</option><option>Terreno</option></select></div>
                             </div>
-
-                            <div class="mb-2">
-                                <label class="fw-bold small text-secondary">Precio (CLP)</label>
-                                <input type="text" id="precio" class="form-control" placeholder="$0" required onkeyup="formatoPesos(this)">
-                                <div class="form-text small">Se convierte a UF automáticamente.</div>
-                            </div>
-                            
-                            <div class="mb-2">
-                                <label class="fw-bold small text-secondary">Ubicación</label>
-                                <input type="text" id="ubicacion" class="form-control" required>
-                            </div>
-
-                            <div class="mb-2">
-                                <label class="fw-bold small text-secondary">Descripción</label>
-                                <textarea id="descripcion" class="form-control" rows="2" placeholder="Características principales..."></textarea>
-                            </div>
-
+                            <div class="mb-2"><input type="text" id="precio" class="form-control" placeholder="Precio" required onkeyup="formatoPesos(this)"></div>
+                            <div class="mb-2"><input type="text" id="ubicacion" class="form-control" placeholder="Ubicación" required></div>
+                            <div class="mb-2"><textarea id="descripcion" class="form-control" placeholder="Descripción..."></textarea></div>
                             <div class="row mb-2">
-                                <div class="col">
-                                    <label class="fw-bold small text-secondary">Dorm.</label>
-                                    <input type="number" id="dormitorios" class="form-control" value="0">
-                                </div>
-                                <div class="col">
-                                    <label class="fw-bold small text-secondary">Baños</label>
-                                    <input type="number" id="banos" class="form-control" value="0">
-                                </div>
+                                <div class="col"><input type="number" id="dormitorios" class="form-control" placeholder="Dorm" value="0"></div>
+                                <div class="col"><input type="number" id="banos" class="form-control" placeholder="Baños" value="0"></div>
                             </div>
-
-                            <div class="mb-3">
-                                <label class="fw-bold small text-secondary">Fotos (URLs)</label>
-                                <textarea id="imagen" class="form-control" rows="3" placeholder="Pega los links aquí separados por coma..." required></textarea>
-                            </div>
-                            
+                            <div class="mb-3"><textarea id="imagen" class="form-control" placeholder="URLs imágenes..." required></textarea></div>
                             <div class="d-grid gap-2">
-                                <button type="submit" id="btnSubmit" class="btn btn-primary fw-bold">Publicar Propiedad</button>
-                                <button type="button" id="btnCancelar" onclick="cancelarEdicion()" class="btn btn-secondary btn-sm" style="display:none;">Cancelar Edición</button>
+                                <button type="submit" id="btnSubmit" class="btn btn-primary">Publicar</button>
+                                <button type="button" id="btnCancelar" onclick="cancelar()" class="btn btn-secondary" style="display:none;">Cancelar</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-
             <div class="col-md-8">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold text-secondary">Mis Propiedades Publicadas</h5>
-                    <span class="badge bg-primary rounded-pill" id="contadorProps">0</span>
-                </div>
-                
-                <div id="listaCorredor" class="row g-3">
-                    <div class="text-center py-5">
-                        <div class="spinner-border text-primary" role="status"></div>
-                    </div>
-                </div>
+                <h5>Mis Propiedades</h5>
+                <div id="lista" class="row g-3"></div>
             </div>
-
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const API_URL = '/api';
-        let misPropiedades = [];
-        
-        // --- 1. VERIFICACIÓN DE SEGURIDAD ---
-        // Si no hay token o no es corredor, pa' fuera
+        let misProps = [];
         const token = localStorage.getItem('token');
         const rol = localStorage.getItem('rolUsuario');
-        const nombreUsuario = localStorage.getItem('nombreUsuario');
+        const user = localStorage.getItem('nombreUsuario');
 
-        if (!token || rol !== 'corredor') {
-            alert("Sesión no válida. Debes iniciar sesión como Corredor.");
-            window.location.href = '/admin.html';
-        }
+        // SEGURIDAD
+        if(!token) window.location.href = '/admin';
+        if(rol === 'admin') window.location.href = '/admin'; // Admin no debe estar aqui
+        if(rol !== 'corredor') window.location.href = '/admin';
 
-        // Mostrar nombre en el header
-        document.getElementById('welcomeMsg').innerText = `Hola, ${nombreUsuario}`;
+        document.getElementById('welcomeMsg').innerText = user;
+        cargarMisProps();
 
-        // --- 2. CARGAR MIS PROPIEDADES ---
-        async function cargarMisPropiedades() {
-            try {
-                // AQUÍ ESTÁ LA MAGIA: Pedimos solo las de este corredor
-                const res = await fetch(`${API_URL}/propiedades?corredor=${encodeURIComponent(nombreUsuario)}`);
-                misPropiedades = (await res.json()).reverse();
-                
-                renderizarLista();
-            } catch (error) {
-                console.error("Error:", error);
-                document.getElementById('listaCorredor').innerHTML = `<p class="text-danger">Error cargando propiedades.</p>`;
-            }
-        }
-
-        function renderizarLista() {
-            const lista = document.getElementById('listaCorredor');
+        async function cargarMisProps() {
+            const res = await fetch(`${API_URL}/propiedades?corredor=${encodeURIComponent(user)}`);
+            misProps = (await res.json()).reverse();
+            const lista = document.getElementById('lista');
             lista.innerHTML = '';
-            document.getElementById('contadorProps').innerText = misPropiedades.length;
-
-            if (misPropiedades.length === 0) {
-                lista.innerHTML = `
-                    <div class="col-12 text-center py-5 text-muted">
-                        <i class="bi bi-houses display-1 opacity-25"></i>
-                        <p class="mt-3">Aún no has publicado propiedades.</p>
-                    </div>`;
-                return;
-            }
-
-            misPropiedades.forEach(p => {
-                const primeraFoto = p.imagen ? p.imagen.split(/[,\s\n]+/)[0] : 'https://via.placeholder.com/150';
-                
+            
+            misProps.forEach(p => {
+                const foto = p.imagen ? p.imagen.split(',')[0] : '';
                 lista.innerHTML += `
-                    <div class="col-12">
-                        <div class="card h-100">
-                            <div class="row g-0">
-                                <div class="col-md-3">
-                                    <img src="${primeraFoto}" class="img-preview h-100" onerror="this.src='https://via.placeholder.com/150'">
-                                </div>
-                                <div class="col-md-9">
-                                    <div class="card-body d-flex flex-column h-100 justify-content-center">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div>
-                                                <h6 class="card-title fw-bold text-truncate mb-1">${p.titulo}</h6>
-                                                <p class="card-text small text-muted mb-2">
-                                                    <i class="bi bi-geo-alt"></i> ${p.ubicacion} | 
-                                                    <span class="text-success fw-bold">${p.precio}</span>
-                                                </p>
-                                            </div>
-                                            <div class="d-flex gap-2">
-                                                <button onclick="prepararEdicion(${p.id})" class="btn btn-outline-warning btn-sm" title="Editar">
-                                                    <i class="bi bi-pencil-fill"></i>
-                                                </button>
-                                                <button onclick="eliminarPropiedad(${p.id})" class="btn btn-outline-danger btn-sm" title="Eliminar">
-                                                    <i class="bi bi-trash-fill"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="mt-2">
-                                            <span class="badge bg-light text-dark border">${p.operacion}</span>
-                                            <span class="badge bg-light text-dark border">${p.tipo}</span>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="col-12"><div class="card h-100"><div class="row g-0">
+                        <div class="col-3"><img src="${foto}" class="img-fluid h-100 w-100 img-prev"></div>
+                        <div class="col-9"><div class="card-body p-2 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="m-0 text-truncate">${p.titulo}</h6>
+                                <small class="text-success fw-bold">${p.precio}</small>
                             </div>
-                        </div>
-                    </div>
-                `;
+                            <div>
+                                <button onclick="editar(${p.id})" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></button>
+                                <button onclick="eliminar(${p.id})" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div></div>
+                    </div></div></div>`;
             });
         }
 
-        // --- 3. PUBLICAR / GUARDAR ---
-        document.getElementById('propiedadForm').addEventListener('submit', async (e) => {
+        document.getElementById('propiedadForm').addEventListener('submit', async(e)=>{
             e.preventDefault();
-            
-            const editId = document.getElementById('editId').value;
-            let rawImages = document.getElementById('imagen').value;
-            let cleanImages = rawImages.replace(/\n/g, ',').trim();
-
-            const datosPropiedad = {
+            const id = document.getElementById('editId').value;
+            const data = {
                 titulo: document.getElementById('titulo').value,
                 operacion: document.getElementById('operacion').value,
                 tipo: document.getElementById('tipo').value,
                 precio: document.getElementById('precio').value,
                 ubicacion: document.getElementById('ubicacion').value,
                 descripcion: document.getElementById('descripcion').value,
-                dormitorios: parseInt(document.getElementById('dormitorios').value) || 0,
-                banos: parseInt(document.getElementById('banos').value) || 0,
-                imagen: cleanImages,
-                // El backend asignará el nombre del corredor basado en el token,
-                // pero lo mandamos por consistencia visual si fuera necesario.
-                corredora: nombreUsuario 
+                dormitorios: parseInt(document.getElementById('dormitorios').value)||0,
+                banos: parseInt(document.getElementById('banos').value)||0,
+                imagen: document.getElementById('imagen').value.replace(/\n/g,','),
+                corredora: user
             };
-
+            
             let url = `${API_URL}/propiedades`;
             let method = 'POST';
+            if(id) { url += `/${id}`; method = 'PUT'; }
 
-            if (editId) {
-                url = `${API_URL}/propiedades/${editId}`;
-                method = 'PUT';
-            }
-
-            try {
-                const res = await fetch(url, {
-                    method: method,
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(datosPropiedad)
-                });
-
-                if(res.ok) {
-                    alert(editId ? "¡Propiedad actualizada!" : "¡Propiedad publicada con éxito!");
-                    cancelarEdicion();
-                    cargarMisPropiedades();
-                } else {
-                    const errorData = await res.json();
-                    alert("Error: " + (errorData.error || "No se pudo guardar"));
-                }
-            } catch (error) {
-                alert("Error de conexión");
-            }
+            const res = await fetch(url, {
+                method, headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify(data)
+            });
+            if(res.ok) { alert("Guardado!"); cancelar(); cargarMisProps(); }
+            else alert("Error");
         });
 
-        // --- 4. FUNCIONES DE EDICIÓN Y ELIMINACIÓN ---
-        function prepararEdicion(id) {
-            const p = misPropiedades.find(prop => prop.id === id);
-            if(!p) return;
-
+        function editar(id) {
+            const p = misProps.find(x => x.id === id);
             document.getElementById('editId').value = p.id;
             document.getElementById('titulo').value = p.titulo;
             document.getElementById('operacion').value = p.operacion;
             document.getElementById('tipo').value = p.tipo;
             document.getElementById('precio').value = p.precio;
             document.getElementById('ubicacion').value = p.ubicacion;
-            document.getElementById('descripcion').value = p.descripcion || '';
+            document.getElementById('descripcion').value = p.descripcion||'';
             document.getElementById('dormitorios').value = p.dormitorios;
             document.getElementById('banos').value = p.banos;
             document.getElementById('imagen').value = p.imagen;
-
-            document.getElementById('formTitle').innerText = "Editando Propiedad";
-            document.getElementById('btnSubmit').innerText = "Guardar Cambios";
-            document.getElementById('btnSubmit').className = "btn btn-warning w-100 fw-bold text-white";
-            document.getElementById('btnCancelar').style.display = 'block';
             
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('formTitle').innerText = "Editar";
+            document.getElementById('btnSubmit').innerText = "Guardar";
+            document.getElementById('btnSubmit').className = "btn btn-warning w-100 text-white";
+            document.getElementById('btnCancelar').style.display='block';
         }
 
-        function cancelarEdicion() {
+        function cancelar() {
             document.getElementById('propiedadForm').reset();
-            document.getElementById('editId').value = '';
-            document.getElementById('formTitle').innerText = "Publicar Propiedad";
-            document.getElementById('btnSubmit').innerText = "Publicar Propiedad";
-            document.getElementById('btnSubmit').className = "btn btn-primary fw-bold w-100";
-            document.getElementById('btnCancelar').style.display = 'none';
+            document.getElementById('editId').value='';
+            document.getElementById('formTitle').innerText="Publicar";
+            document.getElementById('btnSubmit').innerText="Publicar";
+            document.getElementById('btnSubmit').className="btn btn-primary w-100";
+            document.getElementById('btnCancelar').style.display='none';
         }
 
-        async function eliminarPropiedad(id) {
-            if(!confirm("¿Seguro que quieres eliminar esta propiedad? No se puede deshacer.")) return;
-
-            try {
-                const res = await fetch(`${API_URL}/propiedades/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if(res.ok) {
-                    cargarMisPropiedades();
-                    if(document.getElementById('editId').value == id) cancelarEdicion();
-                } else {
-                    alert("No se pudo eliminar. Verifica que sea tu propiedad.");
-                }
-            } catch (error) {
-                alert("Error de conexión");
+        async function eliminar(id) {
+            if(confirm("¿Borrar?")) {
+                await fetch(`${API_URL}/propiedades/${id}`, {method:'DELETE', headers:{'Authorization':`Bearer ${token}`}});
+                cargarMisProps();
             }
         }
 
-        function formatoPesos(input) {
-            let valor = input.value.replace(/\D/g, "");
-            if (valor) valor = "$" + valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            input.value = valor;
-        }
-
-        function cerrarSesion() {
-            localStorage.clear();
-            window.location.href = '/admin.html';
-        }
-
-        // Iniciar
-        cargarMisPropiedades();
+        function logout() { localStorage.clear(); window.location.href='/admin'; }
+        function formatoPesos(i) { i.value = i.value.replace(/\D/g,"").replace(/\B(?=(\d{3})+(?!\d))/g,"."); }
     </script>
 </body>
 </html>

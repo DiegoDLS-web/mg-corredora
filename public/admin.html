@@ -13,7 +13,6 @@
         .dashboard-container { display: none; }
         .admin-img-preview { height: 150px; object-fit: cover; width: 100%; }
         .nav-pills .nav-link.active { background-color: var(--bs-primary); }
-        .nav-pills .nav-link { color: var(--bs-secondary); font-weight: 600; }
     </style>
 </head>
 <body>
@@ -24,12 +23,12 @@
             
             <ul class="nav nav-pills nav-fill mb-4 gap-2" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="pills-admin-tab" data-bs-toggle="pill" data-bs-target="#pills-admin" type="button" role="tab">
+                    <button class="nav-link active" id="pills-admin-tab" data-bs-toggle="pill" data-bs-target="#pills-admin" type="button">
                         <i class="bi bi-shield-lock-fill"></i> Administrador
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="pills-corredor-tab" data-bs-toggle="pill" data-bs-target="#pills-corredor" type="button" role="tab">
+                    <button class="nav-link" id="pills-corredor-tab" data-bs-toggle="pill" data-bs-target="#pills-corredor" type="button">
                         <i class="bi bi-person-badge-fill"></i> Corredor
                     </button>
                 </li>
@@ -38,110 +37,53 @@
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-admin" role="tabpanel">
                     <form onsubmit="handleLogin(event, 'admin')">
-                        <div class="mb-3">
-                            <input type="email" id="emailAdmin" class="form-control py-2" placeholder="Correo Administrador" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="password" id="passAdmin" class="form-control py-2" placeholder="Contraseña" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Entrar como Admin</button>
+                        <div class="mb-3"><input type="email" id="emailAdmin" class="form-control" placeholder="Correo Admin" required></div>
+                        <div class="mb-3"><input type="password" id="passAdmin" class="form-control" placeholder="Contraseña" required></div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">Entrar Admin</button>
                     </form>
                 </div>
-
                 <div class="tab-pane fade" id="pills-corredor" role="tabpanel">
-                    <div class="alert alert-light border small text-muted mb-3">
-                        <i class="bi bi-info-circle"></i> Acceso exclusivo para corredores de la alianza.
-                    </div>
                     <form onsubmit="handleLogin(event, 'corredor')">
-                        <div class="mb-3">
-                            <input type="email" id="emailCorredor" class="form-control py-2" placeholder="Correo Corredor" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="password" id="passCorredor" class="form-control py-2" placeholder="Contraseña" required>
-                        </div>
-                        <button type="submit" class="btn btn-outline-primary w-100 py-2 fw-bold">Entrar como Corredor</button>
+                        <div class="mb-3"><input type="email" id="emailCorredor" class="form-control" placeholder="Correo Corredor" required></div>
+                        <div class="mb-3"><input type="password" id="passCorredor" class="form-control" placeholder="Contraseña" required></div>
+                        <button type="submit" class="btn btn-outline-primary w-100 fw-bold">Entrar Corredor</button>
                     </form>
                 </div>
             </div>
-
-            <p id="errorMsg" class="text-danger mt-3 small fw-bold"></p>
-            
-            <a href="/" class="text-decoration-none text-muted small mt-4 d-block">
-                <i class="bi bi-arrow-left"></i> Volver al Inicio
-            </a>
+            <p id="errorMsg" class="text-danger mt-3 fw-bold"></p>
+            <a href="/" class="text-muted small mt-4 d-block">Volver al Inicio</a>
         </div>
     </div>
 
     <div id="dashboardSection" class="dashboard-container container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <h2 class="m-0">Panel de Administración</h2>
-                <button class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#modalNuevoCorredor">
-                    <i class="bi bi-person-plus-fill"></i> Crear Corredor
-                </button>
-                <a href="/" target="_blank" class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-eye"></i> Ver Web
-                </a>
+            <div class="d-flex gap-3 align-items-center">
+                <h2 class="m-0">Panel Admin</h2>
+                <button class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#modalCorredor"><i class="bi bi-person-plus"></i> Crear Corredor</button>
             </div>
-            <button onclick="cerrarSesion()" class="btn btn-outline-danger btn-sm">
-                <i class="bi bi-box-arrow-right"></i> Salir
-            </button>
+            <button onclick="cerrarSesion()" class="btn btn-outline-danger btn-sm">Salir</button>
         </div>
 
         <div class="row">
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm border-0 sticky-top" style="top: 20px; z-index: 1;">
+                <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
                     <div class="card-header bg-primary text-white fw-bold" id="formTitle">Nueva Propiedad</div>
                     <div class="card-body">
                         <form id="propiedadForm">
-                            <input type="hidden" id="editId"> 
-                            <div class="mb-2">
-                                <label class="fw-bold small">Título</label>
-                                <input type="text" id="titulo" class="form-control" required>
-                            </div>
+                            <input type="hidden" id="editId">
+                            <div class="mb-2"><input type="text" id="titulo" class="form-control" placeholder="Título" required></div>
                             <div class="row mb-2">
-                                <div class="col">
-                                    <label class="fw-bold small">Operación</label>
-                                    <select id="operacion" class="form-select">
-                                        <option>Venta</option>
-                                        <option>Arriendo</option>
-                                    </select>
-                                </div>
-                                <div class="col">
-                                    <label class="fw-bold small">Tipo</label>
-                                    <select id="tipo" class="form-select">
-                                        <option>Casa</option>
-                                        <option>Departamento</option>
-                                        <option>Terreno</option>
-                                    </select>
-                                </div>
+                                <div class="col"><select id="operacion" class="form-select"><option>Venta</option><option>Arriendo</option></select></div>
+                                <div class="col"><select id="tipo" class="form-select"><option>Casa</option><option>Departamento</option><option>Terreno</option></select></div>
                             </div>
-                            <div class="mb-2">
-                                <label class="fw-bold small">Precio (CLP)</label>
-                                <input type="text" id="precio" class="form-control" placeholder="$0" required onkeyup="formatoPesos(this)">
-                            </div>
-                            <div class="mb-2">
-                                <label class="fw-bold small">Ubicación</label>
-                                <input type="text" id="ubicacion" class="form-control" required>
-                            </div>
-                            <div class="mb-2">
-                                <label class="fw-bold small">Descripción</label>
-                                <textarea id="descripcion" class="form-control" rows="2" placeholder="Detalles..."></textarea>
-                            </div>
+                            <div class="mb-2"><input type="text" id="precio" class="form-control" placeholder="Precio" required onkeyup="formatoPesos(this)"></div>
+                            <div class="mb-2"><input type="text" id="ubicacion" class="form-control" placeholder="Ubicación" required></div>
+                            <div class="mb-2"><textarea id="descripcion" class="form-control" placeholder="Descripción..."></textarea></div>
                             <div class="row mb-2">
-                                <div class="col">
-                                    <label class="fw-bold small">Dorm.</label>
-                                    <input type="number" id="dormitorios" class="form-control" value="0">
-                                </div>
-                                <div class="col">
-                                    <label class="fw-bold small">Baños</label>
-                                    <input type="number" id="banos" class="form-control" value="0">
-                                </div>
+                                <div class="col"><input type="number" id="dormitorios" class="form-control" placeholder="Dorm" value="0"></div>
+                                <div class="col"><input type="number" id="banos" class="form-control" placeholder="Baños" value="0"></div>
                             </div>
-                            <div class="mb-3">
-                                <label class="fw-bold small">Imágenes (URLs)</label>
-                                <textarea id="imagen" class="form-control" rows="3" placeholder="Separadas por coma..." required></textarea>
-                            </div>
+                            <div class="mb-3"><textarea id="imagen" class="form-control" placeholder="URLs imágenes..." required></textarea></div>
                             <div class="d-flex gap-2">
                                 <button type="submit" id="btnSubmit" class="btn btn-success w-100">Publicar</button>
                                 <button type="button" id="btnCancelar" onclick="cancelarEdicion()" class="btn btn-secondary" style="display:none;">Cancelar</button>
@@ -150,36 +92,23 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-8">
-                <h4 class="mb-3">Todas las Propiedades (Global)</h4>
+                <h4>Todas las Propiedades</h4>
                 <div id="listaAdmin" class="row g-3"></div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="modalNuevoCorredor" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalCorredor" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title">Registrar Nuevo Corredor</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
+                <div class="modal-header bg-dark text-white"><h5 class="modal-title">Nuevo Corredor</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
                 <div class="modal-body">
                     <form id="formCrearCorredor">
-                        <div class="mb-3">
-                            <label class="form-label">Nombre del Corredor (o Empresa)</label>
-                            <input type="text" id="newNombre" class="form-control" required placeholder="Ej: Juan Pérez">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Correo Electrónico</label>
-                            <input type="email" id="newEmail" class="form-control" required placeholder="juan@correo.cl">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Contraseña</label>
-                            <input type="password" id="newPass" class="form-control" required placeholder="******">
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Crear Cuenta</button>
+                        <div class="mb-3"><input type="text" id="newNombre" class="form-control" placeholder="Nombre" required></div>
+                        <div class="mb-3"><input type="email" id="newEmail" class="form-control" placeholder="Email" required></div>
+                        <div class="mb-3"><input type="password" id="newPass" class="form-control" placeholder="Contraseña" required></div>
+                        <button type="submit" class="btn btn-primary w-100">Crear</button>
                     </form>
                 </div>
             </div>
@@ -189,240 +118,164 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const API_URL = '/api';
-        let propiedadesGlobales = [];
+        let propiedades = [];
 
-        // --- 1. VERIFICAR SESIÓN EXISTENTE ---
+        // VALIDAR SESIÓN AL CARGAR
         document.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('token');
-            const rol = localStorage.getItem('rolUsuario');
-
-            if (token && rol) {
-                // Si ya estás logueado, te mando a tu sitio correspondiente
-                if (rol === 'admin') {
-                    mostrarDashboard();
-                } else {
-                    window.location.href = '/panel-corredor';
-                }
-            }
+            const t = localStorage.getItem('token');
+            const r = localStorage.getItem('rolUsuario');
+            if(t && r === 'admin') mostrarDashboard();
+            if(t && r === 'corredor') window.location.href = '/panel-corredor';
         });
 
-        // --- 2. LOGIN CON VALIDACIÓN ESTRICTA ---
-        async function handleLogin(e, puertaDeEntrada) {
+        // LOGIN
+        async function handleLogin(e, source) {
             e.preventDefault();
+            const email = document.getElementById(source==='admin'?'emailAdmin':'emailCorredor').value;
+            const password = document.getElementById(source==='admin'?'passAdmin':'passCorredor').value;
             
-            const emailId = puertaDeEntrada === 'admin' ? 'emailAdmin' : 'emailCorredor';
-            const passId = puertaDeEntrada === 'admin' ? 'passAdmin' : 'passCorredor';
-
-            const email = document.getElementById(emailId).value;
-            const password = document.getElementById(passId).value;
-
-            // Limpiar errores previos
-            document.getElementById('errorMsg').innerText = "";
-
             try {
                 const res = await fetch(`${API_URL}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email, password})
                 });
-
                 const data = await res.json();
-
-                if (res.ok) {
-                    // --- VALIDACIÓN DE PUERTA (ESTRICTA) ---
-                    
-                    // Si intentas entrar como Admin en la puerta de Corredor
-                    if (puertaDeEntrada === 'corredor' && data.rol === 'admin') {
-                        document.getElementById('errorMsg').innerText = "Error: Eres Administrador. Usa la pestaña 'Administrador'.";
-                        return;
+                
+                if(res.ok) {
+                    // VALIDACIÓN DE PUERTA
+                    if(source === 'corredor' && data.rol === 'admin') {
+                        document.getElementById('errorMsg').innerText = "Eres Admin. Usa la pestaña Admin."; return;
+                    }
+                    if(source === 'admin' && data.rol !== 'admin') {
+                        document.getElementById('errorMsg').innerText = "No eres Admin. Usa la pestaña Corredor."; return;
                     }
 
-                    // Si intentas entrar como Corredor en la puerta de Admin
-                    if (puertaDeEntrada === 'admin' && data.rol !== 'admin') {
-                        document.getElementById('errorMsg').innerText = "Error: No tienes permisos de Admin. Usa la pestaña 'Corredor'.";
-                        return;
-                    }
-
-                    // SI PASA, GUARDAMOS Y REDIRIGIMOS
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('rolUsuario', data.rol);
                     localStorage.setItem('nombreUsuario', data.nombre);
-
-                    if (data.rol === 'admin') {
-                        mostrarDashboard();
-                    } else {
-                        window.location.href = '/panel-corredor';
-                    }
-
+                    
+                    if(data.rol === 'admin') mostrarDashboard();
+                    else window.location.href = '/panel-corredor';
                 } else {
-                    document.getElementById('errorMsg').innerText = data.error || "Credenciales incorrectas.";
+                    document.getElementById('errorMsg').innerText = data.error;
                 }
-            } catch (error) {
-                console.error(error);
-                document.getElementById('errorMsg').innerText = "Error de conexión.";
-            }
+            } catch(e) { document.getElementById('errorMsg').innerText = "Error conexión"; }
         }
 
         function mostrarDashboard() {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('dashboardSection').style.display = 'block';
-            cargarPropiedadesAdmin();
+            document.getElementById('loginSection').style.display='none';
+            document.getElementById('dashboardSection').style.display='block';
+            cargarPropiedades();
         }
+        
+        function cerrarSesion() { localStorage.clear(); location.reload(); }
 
-        function cerrarSesion() {
-            localStorage.clear();
-            window.location.reload(); 
-        }
-
-        // --- 3. CARGAR PROPIEDADES ---
-        async function cargarPropiedadesAdmin() {
-            try {
-                const res = await fetch(`${API_URL}/propiedades`);
-                propiedadesGlobales = (await res.json()).reverse();
-                
-                const lista = document.getElementById('listaAdmin');
-                lista.innerHTML = '';
-
-                propiedadesGlobales.forEach(p => {
-                    const primeraFoto = p.imagen ? p.imagen.split(/[,\s\n]+/)[0] : '';
-                    const etiquetaDueño = p.corredora && p.corredora !== 'MGPropiedades' 
-                        ? `<span class="badge bg-info text-dark mb-1"><i class="bi bi-person"></i> ${p.corredora}</span>` 
-                        : `<span class="badge bg-secondary mb-1">MG Propiedades</span>`;
-
-                    lista.innerHTML += `
-                        <div class="col-md-6">
-                            <div class="card h-100 shadow-sm">
-                                <div class="row g-0 h-100">
-                                    <div class="col-4">
-                                        <img src="${primeraFoto}" class="img-fluid rounded-start h-100 admin-img-preview" onerror="this.src='https://via.placeholder.com/150'">
-                                    </div>
-                                    <div class="col-8">
-                                        <div class="card-body p-2">
-                                            ${etiquetaDueño}
-                                            <h6 class="card-title text-truncate mb-1">${p.titulo}</h6>
-                                            <p class="card-text small m-0 text-muted">${p.precio} - ${p.operacion}</p>
-                                            <div class="mt-2">
-                                                <button onclick="prepararEdicion(${p.id})" class="btn btn-warning btn-sm text-white"><i class="bi bi-pencil"></i></button>
-                                                <button onclick="eliminarPropiedad(${p.id})" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+        // CARGAR PROPIEDADES (ADMIN VE TODO)
+        async function cargarPropiedades() {
+            const res = await fetch(`${API_URL}/propiedades`);
+            propiedades = (await res.json()).reverse();
+            const lista = document.getElementById('listaAdmin');
+            lista.innerHTML = '';
+            
+            propiedades.forEach(p => {
+                const foto = p.imagen ? p.imagen.split(',')[0] : '';
+                const tag = p.corredora !== 'MGPropiedades' ? 
+                    `<span class="badge bg-info text-dark mb-1">${p.corredora}</span>` : 
+                    `<span class="badge bg-secondary mb-1">MG</span>`;
+                    
+                lista.innerHTML += `
+                    <div class="col-md-6"><div class="card h-100 shadow-sm"><div class="row g-0 h-100">
+                        <div class="col-4"><img src="${foto}" class="img-fluid h-100 admin-img-preview"></div>
+                        <div class="col-8"><div class="card-body p-2">
+                            ${tag} <h6 class="text-truncate">${p.titulo}</h6>
+                            <small class="text-muted">${p.precio} - ${p.operacion}</small>
+                            <div class="mt-2">
+                                <button onclick="editar(${p.id})" class="btn btn-warning btn-sm text-white"><i class="bi bi-pencil"></i></button>
+                                <button onclick="eliminar(${p.id})" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                             </div>
-                        </div>`;
-                });
-            } catch (error) { console.error("Error:", error); }
+                        </div></div>
+                    </div></div></div>`;
+            });
         }
 
-        // --- 4. CREAR/EDITAR PROPIEDAD ---
-        document.getElementById('propiedadForm').addEventListener('submit', async (e) => {
+        // GUARDAR PROPIEDAD
+        document.getElementById('propiedadForm').addEventListener('submit', async(e)=>{
             e.preventDefault();
             const token = localStorage.getItem('token');
-            const editId = document.getElementById('editId').value;
-            let cleanImages = document.getElementById('imagen').value.replace(/\n/g, ',').trim();
-
-            const datos = {
+            const id = document.getElementById('editId').value;
+            const data = {
                 titulo: document.getElementById('titulo').value,
                 operacion: document.getElementById('operacion').value,
                 tipo: document.getElementById('tipo').value,
                 precio: document.getElementById('precio').value,
                 ubicacion: document.getElementById('ubicacion').value,
                 descripcion: document.getElementById('descripcion').value,
-                dormitorios: parseInt(document.getElementById('dormitorios').value) || 0,
-                banos: parseInt(document.getElementById('banos').value) || 0,
-                imagen: cleanImages,
+                dormitorios: parseInt(document.getElementById('dormitorios').value)||0,
+                banos: parseInt(document.getElementById('banos').value)||0,
+                imagen: document.getElementById('imagen').value.replace(/\n/g,','),
                 corredora: "MGPropiedades"
             };
-
+            
             let url = `${API_URL}/propiedades`;
             let method = 'POST';
-
-            if (editId) {
-                url = `${API_URL}/propiedades/${editId}`;
-                method = 'PUT';
-                delete datos.corredora; 
-            }
+            if(id) { url += `/${id}`; method = 'PUT'; delete data.corredora; }
 
             const res = await fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify(datos)
+                method, headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify(data)
             });
-
-            if(res.ok) {
-                alert(editId ? "Actualizado" : "Creado");
-                cancelarEdicion();
-                cargarPropiedadesAdmin();
-            } else { alert("Error al guardar"); }
+            if(res.ok) { alert(id?"Editado":"Creado"); cancelarEdicion(); cargarPropiedades(); }
         });
 
-        // --- 5. CREAR CORREDOR ---
-        document.getElementById('formCrearCorredor').addEventListener('submit', async (e) => {
+        // CREAR CORREDOR
+        document.getElementById('formCrearCorredor').addEventListener('submit', async(e)=>{
             e.preventDefault();
             const token = localStorage.getItem('token');
-            const nombre = document.getElementById('newNombre').value;
-            const email = document.getElementById('newEmail').value;
-            const password = document.getElementById('newPass').value;
-
-            if(!confirm(`¿Crear cuenta para ${nombre}?`)) return;
-
+            const body = {
+                nombre: document.getElementById('newNombre').value,
+                email: document.getElementById('newEmail').value,
+                password: document.getElementById('newPass').value
+            };
             const res = await fetch(`${API_URL}/usuarios`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ nombre, email, password })
+                method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify(body)
             });
-
-            if (res.ok) {
-                alert("¡Corredor creado!");
-                document.getElementById('formCrearCorredor').reset();
-                bootstrap.Modal.getInstance(document.getElementById('modalNuevoCorredor')).hide();
-            } else {
-                const data = await res.json();
-                alert("Error: " + data.error);
-            }
+            if(res.ok) { alert("Creado!"); bootstrap.Modal.getInstance(document.getElementById('modalCorredor')).hide(); }
         });
 
-        function prepararEdicion(id) {
-            const p = propiedadesGlobales.find(prop => prop.id === id);
-            if(!p) return;
+        function editar(id) {
+            const p = propiedades.find(x => x.id === id);
             document.getElementById('editId').value = p.id;
             document.getElementById('titulo').value = p.titulo;
             document.getElementById('operacion').value = p.operacion;
             document.getElementById('tipo').value = p.tipo;
             document.getElementById('precio').value = p.precio;
             document.getElementById('ubicacion').value = p.ubicacion;
-            document.getElementById('descripcion').value = p.descripcion || '';
+            document.getElementById('descripcion').value = p.descripcion||'';
             document.getElementById('dormitorios').value = p.dormitorios;
             document.getElementById('banos').value = p.banos;
             document.getElementById('imagen').value = p.imagen;
-            document.getElementById('formTitle').innerText = "Editar Propiedad";
-            document.getElementById('btnSubmit').innerText = "Guardar Cambios";
+            
+            document.getElementById('formTitle').innerText = "Editar";
+            document.getElementById('btnSubmit').innerText = "Guardar";
             document.getElementById('btnSubmit').className = "btn btn-warning w-100 text-white";
-            document.getElementById('btnCancelar').style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('btnCancelar').style.display='block';
         }
 
         function cancelarEdicion() {
             document.getElementById('propiedadForm').reset();
-            document.getElementById('editId').value = '';
-            document.getElementById('formTitle').innerText = "Nueva Propiedad";
-            document.getElementById('btnSubmit').innerText = "Publicar";
-            document.getElementById('btnSubmit').className = "btn btn-success w-100";
-            document.getElementById('btnCancelar').style.display = 'none';
+            document.getElementById('editId').value='';
+            document.getElementById('formTitle').innerText="Nueva Propiedad";
+            document.getElementById('btnSubmit').innerText="Publicar";
+            document.getElementById('btnSubmit').className="btn btn-success w-100";
+            document.getElementById('btnCancelar').style.display='none';
         }
 
-        async function eliminarPropiedad(id) {
-            if(!confirm("¿Eliminar?")) return;
-            const token = localStorage.getItem('token');
-            const res = await fetch(`${API_URL}/propiedades/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-            if(res.ok) cargarPropiedadesAdmin();
+        async function eliminar(id) {
+            if(confirm("¿Borrar?")) {
+                await fetch(`${API_URL}/propiedades/${id}`, {method:'DELETE', headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}});
+                cargarPropiedades();
+            }
         }
 
-        function formatoPesos(input) {
-            let valor = input.value.replace(/\D/g, "");
-            if (valor) valor = "$" + valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            input.value = valor;
-        }
+        function formatoPesos(i) { i.value = i.value.replace(/\D/g,"").replace(/\B(?=(\d{3})+(?!\d))/g,"."); }
     </script>
 </body>
 </html>
