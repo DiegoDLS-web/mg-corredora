@@ -8,7 +8,7 @@ const path = require('path');
 const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SECRET_KEY = "mi_secreto_super_seguro"; // En producción usa env
+const SECRET_KEY = "mi_secreto_super_seguro"; // En producción usa una variable de entorno
 
 app.use(cors());
 app.use(express.json());
@@ -16,14 +16,14 @@ app.use(express.static('public'));
 
 // --- RUTAS PÚBLICAS ---
 
-// Obtener propiedades (Con filtro opcional por Corredor)
+// Obtener propiedades
 app.get('/api/propiedades', async (req, res) => {
     try {
         const { corredor } = req.query; 
         
         let filtro = {};
         
-        // Si viene el parámetro corredor, filtramos
+        // Filtro opcional por corredor
         if (corredor && corredor !== 'null' && corredor !== 'undefined') {
             filtro = { 
                 corredora: {
@@ -45,7 +45,7 @@ app.get('/api/propiedades', async (req, res) => {
     }
 });
 
-// Login (Admin y Corredor)
+// Login Unificado (Devuelve Rol)
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     
@@ -57,7 +57,6 @@ app.post('/api/login', async (req, res) => {
         const valid = await bcrypt.compare(password, usuario.password);
         if (!valid) return res.status(401).json({ error: "Credenciales incorrectas" });
 
-        // Si no tiene rol en DB, asumimos admin (seguridad por defecto)
         const userRole = usuario.rol || 'admin'; 
         const userName = usuario.nombre || 'Administrador';
 
@@ -80,7 +79,7 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// --- RUTAS DE VISTAS (HTML) ---
+// --- RUTAS VISTAS ---
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
@@ -89,7 +88,7 @@ app.get('/panel-corredor', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'panel-corredor.html'));
 });
 
-// --- MIDDLEWARE DE SEGURIDAD ---
+// --- SEGURIDAD ---
 const verificarToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; 
@@ -103,13 +102,13 @@ const verificarToken = (req, res, next) => {
     });
 };
 
-// --- RUTAS PROTEGIDAS (PROPIEDADES) ---
+// --- RUTAS PROTEGIDAS ---
 
-// Crear propiedad 
+// Crear propiedad
 app.post('/api/propiedades', verificarToken, async (req, res) => {
     try {
         const datos = req.body;
-        // Si es corredor, forzamos su nombre
+        // Si es corredor, forzamos la autoría
         if (req.user.rol === 'corredor') {
             datos.corredora = req.user.nombre; 
         }
@@ -127,11 +126,11 @@ app.put('/api/propiedades/:id', verificarToken, async (req, res) => {
         const { id } = req.params;
         const datos = req.body;
         
-        // Seguridad: Si es corredor, solo edita lo suyo
+        // Corredor solo edita lo suyo
         if (req.user.rol === 'corredor') {
             const propExistente = await prisma.propiedad.findUnique({ where: { id: parseInt(id) } });
             if (!propExistente || propExistente.corredora !== req.user.nombre) {
-                return res.status(403).json({ error: "No tienes permiso para editar esta propiedad" });
+                return res.status(403).json({ error: "No tienes permiso" });
             }
         }
 
@@ -154,11 +153,11 @@ app.delete('/api/propiedades/:id', verificarToken, async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Seguridad: Si es corredor, solo borra lo suyo
+        // Corredor solo borra lo suyo
         if (req.user.rol === 'corredor') {
             const propExistente = await prisma.propiedad.findUnique({ where: { id: parseInt(id) } });
             if (!propExistente || propExistente.corredora !== req.user.nombre) {
-                return res.status(403).json({ error: "No tienes permiso para eliminar esta propiedad" });
+                return res.status(403).json({ error: "No tienes permiso" });
             }
         }
 
@@ -170,8 +169,6 @@ app.delete('/api/propiedades/:id', verificarToken, async (req, res) => {
 });
 
 // --- GESTIÓN DE USUARIOS (Solo Admin) ---
-
-// Crear Corredor
 app.post('/api/usuarios', verificarToken, async (req, res) => {
     try {
         if (req.user.rol !== 'admin') {
@@ -181,7 +178,7 @@ app.post('/api/usuarios', verificarToken, async (req, res) => {
         const { email, password, nombre } = req.body;
 
         const existe = await prisma.usuario.findUnique({ where: { email } });
-        if (existe) return res.status(400).json({ error: "El correo ya está registrado" });
+        if (existe) return res.status(400).json({ error: "Correo ya registrado" });
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -194,23 +191,12 @@ app.post('/api/usuarios', verificarToken, async (req, res) => {
             }
         });
 
-        res.json({ message: "Corredor creado con éxito", id: nuevoUsuario.id });
+        res.json({ message: "Corredor creado", id: nuevoUsuario.id });
 
     } catch (e) {
         console.error(e);
         res.status(500).json({ error: "Error al crear usuario" });
     }
-});
-
-// Listar Corredores
-app.get('/api/usuarios', verificarToken, async (req, res) => {
-    if (req.user.rol !== 'admin') return res.status(403).json({ error: "Sin permiso" });
-    
-    const usuarios = await prisma.usuario.findMany({
-        where: { rol: 'corredor' },
-        select: { id: true, nombre: true, email: true }
-    });
-    res.json(usuarios);
 });
 
 app.listen(PORT, () => {

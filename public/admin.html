@@ -36,7 +36,6 @@
             </ul>
 
             <div class="tab-content" id="pills-tabContent">
-                
                 <div class="tab-pane fade show active" id="pills-admin" role="tabpanel">
                     <form onsubmit="handleLogin(event, 'admin')">
                         <div class="mb-3">
@@ -74,20 +73,16 @@
     </div>
 
     <div id="dashboardSection" class="dashboard-container container py-5">
-        
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="d-flex align-items-center gap-3">
                 <h2 class="m-0">Panel de Administración</h2>
-                
                 <button class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#modalNuevoCorredor">
                     <i class="bi bi-person-plus-fill"></i> Crear Corredor
                 </button>
-
                 <a href="/" target="_blank" class="btn btn-sm btn-outline-primary">
                     <i class="bi bi-eye"></i> Ver Web
                 </a>
             </div>
-            
             <button onclick="cerrarSesion()" class="btn btn-outline-danger btn-sm">
                 <i class="bi bi-box-arrow-right"></i> Salir
             </button>
@@ -100,12 +95,10 @@
                     <div class="card-body">
                         <form id="propiedadForm">
                             <input type="hidden" id="editId"> 
-                            
                             <div class="mb-2">
                                 <label class="fw-bold small">Título</label>
                                 <input type="text" id="titulo" class="form-control" required>
                             </div>
-                            
                             <div class="row mb-2">
                                 <div class="col">
                                     <label class="fw-bold small">Operación</label>
@@ -123,22 +116,18 @@
                                     </select>
                                 </div>
                             </div>
-
                             <div class="mb-2">
                                 <label class="fw-bold small">Precio (CLP)</label>
                                 <input type="text" id="precio" class="form-control" placeholder="$0" required onkeyup="formatoPesos(this)">
                             </div>
-                            
                             <div class="mb-2">
                                 <label class="fw-bold small">Ubicación</label>
                                 <input type="text" id="ubicacion" class="form-control" required>
                             </div>
-                            
                             <div class="mb-2">
                                 <label class="fw-bold small">Descripción</label>
                                 <textarea id="descripcion" class="form-control" rows="2" placeholder="Detalles..."></textarea>
                             </div>
-
                             <div class="row mb-2">
                                 <div class="col">
                                     <label class="fw-bold small">Dorm.</label>
@@ -149,12 +138,10 @@
                                     <input type="number" id="banos" class="form-control" value="0">
                                 </div>
                             </div>
-
                             <div class="mb-3">
                                 <label class="fw-bold small">Imágenes (URLs)</label>
                                 <textarea id="imagen" class="form-control" rows="3" placeholder="Separadas por coma..." required></textarea>
                             </div>
-                            
                             <div class="d-flex gap-2">
                                 <button type="submit" id="btnSubmit" class="btn btn-success w-100">Publicar</button>
                                 <button type="button" id="btnCancelar" onclick="cancelarEdicion()" class="btn btn-secondary" style="display:none;">Cancelar</button>
@@ -166,8 +153,7 @@
 
             <div class="col-md-8">
                 <h4 class="mb-3">Todas las Propiedades (Global)</h4>
-                <div id="listaAdmin" class="row g-3">
-                    </div>
+                <div id="listaAdmin" class="row g-3"></div>
             </div>
         </div>
     </div>
@@ -205,15 +191,33 @@
         const API_URL = '/api';
         let propiedadesGlobales = [];
 
-        // --- 1. LÓGICA DE LOGIN ---
-        async function handleLogin(e, tipoFormulario) {
+        // --- 1. VERIFICAR SESIÓN EXISTENTE ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const rol = localStorage.getItem('rolUsuario');
+
+            if (token && rol) {
+                // Si ya estás logueado, te mando a tu sitio correspondiente
+                if (rol === 'admin') {
+                    mostrarDashboard();
+                } else {
+                    window.location.href = '/panel-corredor';
+                }
+            }
+        });
+
+        // --- 2. LOGIN CON VALIDACIÓN ESTRICTA ---
+        async function handleLogin(e, puertaDeEntrada) {
             e.preventDefault();
             
-            const emailInput = tipoFormulario === 'admin' ? 'emailAdmin' : 'emailCorredor';
-            const passInput = tipoFormulario === 'admin' ? 'passAdmin' : 'passCorredor';
+            const emailId = puertaDeEntrada === 'admin' ? 'emailAdmin' : 'emailCorredor';
+            const passId = puertaDeEntrada === 'admin' ? 'passAdmin' : 'passCorredor';
 
-            const email = document.getElementById(emailInput).value;
-            const password = document.getElementById(passInput).value;
+            const email = document.getElementById(emailId).value;
+            const password = document.getElementById(passId).value;
+
+            // Limpiar errores previos
+            document.getElementById('errorMsg').innerText = "";
 
             try {
                 const res = await fetch(`${API_URL}/login`, {
@@ -225,18 +229,33 @@
                 const data = await res.json();
 
                 if (res.ok) {
+                    // --- VALIDACIÓN DE PUERTA (ESTRICTA) ---
+                    
+                    // Si intentas entrar como Admin en la puerta de Corredor
+                    if (puertaDeEntrada === 'corredor' && data.rol === 'admin') {
+                        document.getElementById('errorMsg').innerText = "Error: Eres Administrador. Usa la pestaña 'Administrador'.";
+                        return;
+                    }
+
+                    // Si intentas entrar como Corredor en la puerta de Admin
+                    if (puertaDeEntrada === 'admin' && data.rol !== 'admin') {
+                        document.getElementById('errorMsg').innerText = "Error: No tienes permisos de Admin. Usa la pestaña 'Corredor'.";
+                        return;
+                    }
+
+                    // SI PASA, GUARDAMOS Y REDIRIGIMOS
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('rolUsuario', data.rol);
                     localStorage.setItem('nombreUsuario', data.nombre);
 
-                    // REDIRECCIÓN SEGÚN ROL
                     if (data.rol === 'admin') {
                         mostrarDashboard();
-                    } else if (data.rol === 'corredor') {
+                    } else {
                         window.location.href = '/panel-corredor';
                     }
+
                 } else {
-                    document.getElementById('errorMsg').innerText = data.error || "Error de acceso.";
+                    document.getElementById('errorMsg').innerText = data.error || "Credenciales incorrectas.";
                 }
             } catch (error) {
                 console.error(error);
@@ -245,17 +264,6 @@
         }
 
         function mostrarDashboard() {
-            const token = localStorage.getItem('token');
-            const rol = localStorage.getItem('rolUsuario');
-
-            if (!token) return;
-            
-            // Seguridad: Si entra un corredor aquí, lo mandamos a su panel
-            if (rol === 'corredor') {
-                window.location.href = '/panel-corredor';
-                return;
-            }
-
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('dashboardSection').style.display = 'block';
             cargarPropiedadesAdmin();
@@ -263,10 +271,10 @@
 
         function cerrarSesion() {
             localStorage.clear();
-            location.reload(); 
+            window.location.reload(); 
         }
 
-        // --- 2. GESTIÓN PROPIEDADES ---
+        // --- 3. CARGAR PROPIEDADES ---
         async function cargarPropiedadesAdmin() {
             try {
                 const res = await fetch(`${API_URL}/propiedades`);
@@ -277,7 +285,6 @@
 
                 propiedadesGlobales.forEach(p => {
                     const primeraFoto = p.imagen ? p.imagen.split(/[,\s\n]+/)[0] : '';
-                    
                     const etiquetaDueño = p.corredora && p.corredora !== 'MGPropiedades' 
                         ? `<span class="badge bg-info text-dark mb-1"><i class="bi bi-person"></i> ${p.corredora}</span>` 
                         : `<span class="badge bg-secondary mb-1">MG Propiedades</span>`;
@@ -294,37 +301,27 @@
                                             ${etiquetaDueño}
                                             <h6 class="card-title text-truncate mb-1">${p.titulo}</h6>
                                             <p class="card-text small m-0 text-muted">${p.precio} - ${p.operacion}</p>
-                                            
                                             <div class="mt-2">
-                                                <button onclick="prepararEdicion(${p.id})" class="btn btn-warning btn-sm text-white" title="Editar">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                                <button onclick="eliminarPropiedad(${p.id})" class="btn btn-danger btn-sm" title="Eliminar">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                                                <button onclick="prepararEdicion(${p.id})" class="btn btn-warning btn-sm text-white"><i class="bi bi-pencil"></i></button>
+                                                <button onclick="eliminarPropiedad(${p.id})" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
-            } catch (error) {
-                console.error("Error:", error);
-            }
+            } catch (error) { console.error("Error:", error); }
         }
 
-        // --- 3. CREAR / EDITAR PROPIEDAD ---
+        // --- 4. CREAR/EDITAR PROPIEDAD ---
         document.getElementById('propiedadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('token');
             const editId = document.getElementById('editId').value;
-            
-            let rawImages = document.getElementById('imagen').value;
-            let cleanImages = rawImages.replace(/\n/g, ',').trim();
+            let cleanImages = document.getElementById('imagen').value.replace(/\n/g, ',').trim();
 
-            const datosPropiedad = {
+            const datos = {
                 titulo: document.getElementById('titulo').value,
                 operacion: document.getElementById('operacion').value,
                 tipo: document.getElementById('tipo').value,
@@ -334,7 +331,7 @@
                 dormitorios: parseInt(document.getElementById('dormitorios').value) || 0,
                 banos: parseInt(document.getElementById('banos').value) || 0,
                 imagen: cleanImages,
-                corredora: "MGPropiedades" 
+                corredora: "MGPropiedades"
             };
 
             let url = `${API_URL}/propiedades`;
@@ -343,70 +340,51 @@
             if (editId) {
                 url = `${API_URL}/propiedades/${editId}`;
                 method = 'PUT';
-                delete datosPropiedad.corredora; // No cambiar dueño al editar
+                delete datos.corredora; 
             }
 
             const res = await fetch(url, {
                 method: method,
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(datosPropiedad)
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(datos)
             });
 
             if(res.ok) {
                 alert(editId ? "Actualizado" : "Creado");
                 cancelarEdicion();
                 cargarPropiedadesAdmin();
-            } else {
-                alert("Error al guardar");
-            }
+            } else { alert("Error al guardar"); }
         });
 
-        // --- 4. CREAR CORREDOR (NUEVO) ---
+        // --- 5. CREAR CORREDOR ---
         document.getElementById('formCrearCorredor').addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('token');
-            
             const nombre = document.getElementById('newNombre').value;
             const email = document.getElementById('newEmail').value;
             const password = document.getElementById('newPass').value;
 
             if(!confirm(`¿Crear cuenta para ${nombre}?`)) return;
 
-            try {
-                const res = await fetch(`${API_URL}/usuarios`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ nombre, email, password })
-                });
+            const res = await fetch(`${API_URL}/usuarios`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ nombre, email, password })
+            });
 
+            if (res.ok) {
+                alert("¡Corredor creado!");
+                document.getElementById('formCrearCorredor').reset();
+                bootstrap.Modal.getInstance(document.getElementById('modalNuevoCorredor')).hide();
+            } else {
                 const data = await res.json();
-
-                if (res.ok) {
-                    alert("¡Corredor creado exitosamente!");
-                    document.getElementById('formCrearCorredor').reset();
-                    // Cerrar modal
-                    const modalEl = document.getElementById('modalNuevoCorredor');
-                    const modal = bootstrap.Modal.getInstance(modalEl);
-                    modal.hide();
-                } else {
-                    alert("Error: " + data.error);
-                }
-            } catch (error) {
-                alert("Error de conexión");
+                alert("Error: " + data.error);
             }
         });
 
-        // --- FUNCIONES AUXILIARES ---
         function prepararEdicion(id) {
             const p = propiedadesGlobales.find(prop => prop.id === id);
             if(!p) return;
-
             document.getElementById('editId').value = p.id;
             document.getElementById('titulo').value = p.titulo;
             document.getElementById('operacion').value = p.operacion;
@@ -417,12 +395,10 @@
             document.getElementById('dormitorios').value = p.dormitorios;
             document.getElementById('banos').value = p.banos;
             document.getElementById('imagen').value = p.imagen;
-
             document.getElementById('formTitle').innerText = "Editar Propiedad";
             document.getElementById('btnSubmit').innerText = "Guardar Cambios";
             document.getElementById('btnSubmit').className = "btn btn-warning w-100 text-white";
             document.getElementById('btnCancelar').style.display = 'block';
-            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -436,30 +412,16 @@
         }
 
         async function eliminarPropiedad(id) {
-            if(!confirm("¿Eliminar definitivamente?")) return;
+            if(!confirm("¿Eliminar?")) return;
             const token = localStorage.getItem('token');
-
-            const res = await fetch(`${API_URL}/propiedades/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if(res.ok) {
-                cargarPropiedadesAdmin();
-            } else {
-                alert("Error al eliminar");
-            }
+            const res = await fetch(`${API_URL}/propiedades/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            if(res.ok) cargarPropiedadesAdmin();
         }
 
         function formatoPesos(input) {
             let valor = input.value.replace(/\D/g, "");
             if (valor) valor = "$" + valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
             input.value = valor;
-        }
-
-        // Inicio automático
-        if(localStorage.getItem('token')) {
-            mostrarDashboard();
         }
     </script>
 </body>
