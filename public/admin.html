@@ -5,29 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administración MGPropiedades</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="icon" href="rojo.png" type="image/png">
     <style>
         body { background-color: #f0f2f5; }
-        .login-container { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .login-container { max-width: 450px; margin: 80px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         .dashboard-container { display: none; }
         .admin-img-preview { height: 150px; object-fit: cover; width: 100%; }
+        .nav-pills .nav-link.active { background-color: var(--bs-primary); }
+        .nav-pills .nav-link { color: var(--bs-secondary); font-weight: 600; }
     </style>
 </head>
 <body>
 
     <div id="loginSection" class="container">
         <div class="login-container text-center">
-            <h3 class="mb-4 text-primary fw-bold">Acceso Admin</h3>
-            <form id="loginForm">
-                <div class="mb-3">
-                    <input type="email" id="email" class="form-control" placeholder="Correo" required>
+            <h3 class="mb-4 text-primary fw-bold">Acceso al Sistema</h3>
+            
+            <ul class="nav nav-pills nav-fill mb-4 gap-2" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-admin-tab" data-bs-toggle="pill" data-bs-target="#pills-admin" type="button" role="tab">
+                        <i class="bi bi-shield-lock-fill"></i> Administrador
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-corredor-tab" data-bs-toggle="pill" data-bs-target="#pills-corredor" type="button" role="tab">
+                        <i class="bi bi-person-badge-fill"></i> Corredor
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="pills-tabContent">
+                
+                <div class="tab-pane fade show active" id="pills-admin" role="tabpanel">
+                    <form onsubmit="handleLogin(event, 'admin')">
+                        <div class="mb-3">
+                            <input type="email" id="emailAdmin" class="form-control py-2" placeholder="Correo Administrador" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" id="passAdmin" class="form-control py-2" placeholder="Contraseña" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Entrar como Admin</button>
+                    </form>
                 </div>
-                <div class="mb-3">
-                    <input type="password" id="password" class="form-control" placeholder="Contraseña" required>
+
+                <div class="tab-pane fade" id="pills-corredor" role="tabpanel">
+                    <div class="alert alert-light border small text-muted mb-3">
+                        <i class="bi bi-info-circle"></i> Acceso exclusivo para corredores de la alianza.
+                    </div>
+                    <form onsubmit="handleLogin(event, 'corredor')">
+                        <div class="mb-3">
+                            <input type="email" id="emailCorredor" class="form-control py-2" placeholder="Correo Corredor" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" id="passCorredor" class="form-control py-2" placeholder="Contraseña" required>
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary w-100 py-2 fw-bold">Entrar como Corredor</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Ingresar</button>
-            </form>
-            <p id="errorMsg" class="text-danger mt-3 small"></p>
+            </div>
+
+            <p id="errorMsg" class="text-danger mt-3 small fw-bold"></p>
             
             <a href="/" class="text-decoration-none text-muted small mt-4 d-block">
                 <i class="bi bi-arrow-left"></i> Volver al Inicio
@@ -39,25 +77,28 @@
         
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="d-flex align-items-center gap-3">
-                <h2>Panel de Control</h2>
+                <h2 class="m-0">Panel de Administración</h2>
+                
+                <button class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#modalNuevoCorredor">
+                    <i class="bi bi-person-plus-fill"></i> Crear Corredor
+                </button>
+
                 <a href="/" target="_blank" class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-eye"></i> Ver Sitio Web
+                    <i class="bi bi-eye"></i> Ver Web
                 </a>
             </div>
             
             <button onclick="cerrarSesion()" class="btn btn-outline-danger btn-sm">
-                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                <i class="bi bi-box-arrow-right"></i> Salir
             </button>
         </div>
 
         <div class="row">
-            
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm border-0">
+                <div class="card shadow-sm border-0 sticky-top" style="top: 20px; z-index: 1;">
                     <div class="card-header bg-primary text-white fw-bold" id="formTitle">Nueva Propiedad</div>
                     <div class="card-body">
                         <form id="propiedadForm">
-                            <input type="hidden" id="token"> 
                             <input type="hidden" id="editId"> 
                             
                             <div class="mb-2">
@@ -84,9 +125,8 @@
                             </div>
 
                             <div class="mb-2">
-                                <label class="fw-bold small">Precio (Pesos Chilenos)</label>
+                                <label class="fw-bold small">Precio (CLP)</label>
                                 <input type="text" id="precio" class="form-control" placeholder="$0" required onkeyup="formatoPesos(this)">
-                                <div class="form-text text-muted small" style="font-size: 0.75rem;">Se convertirá a UF automáticamente.</div>
                             </div>
                             
                             <div class="mb-2">
@@ -96,7 +136,7 @@
                             
                             <div class="mb-2">
                                 <label class="fw-bold small">Descripción</label>
-                                <textarea id="descripcion" class="form-control" rows="2" placeholder="Detalles de la propiedad..."></textarea>
+                                <textarea id="descripcion" class="form-control" rows="2" placeholder="Detalles..."></textarea>
                             </div>
 
                             <div class="row mb-2">
@@ -111,12 +151,12 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="fw-bold small">URLs de Imágenes</label>
-                                <textarea id="imagen" class="form-control" rows="4" placeholder="Links separados por coma..." required></textarea>
+                                <label class="fw-bold small">Imágenes (URLs)</label>
+                                <textarea id="imagen" class="form-control" rows="3" placeholder="Separadas por coma..." required></textarea>
                             </div>
                             
                             <div class="d-flex gap-2">
-                                <button type="submit" id="btnSubmit" class="btn btn-success w-100">Publicar Propiedad</button>
+                                <button type="submit" id="btnSubmit" class="btn btn-success w-100">Publicar</button>
                                 <button type="button" id="btnCancelar" onclick="cancelarEdicion()" class="btn btn-secondary" style="display:none;">Cancelar</button>
                             </div>
                         </form>
@@ -125,22 +165,55 @@
             </div>
 
             <div class="col-md-8">
-                <h4 class="mb-3">Propiedades Publicadas</h4>
+                <h4 class="mb-3">Todas las Propiedades (Global)</h4>
                 <div id="listaAdmin" class="row g-3">
                     </div>
             </div>
         </div>
     </div>
 
+    <div class="modal fade" id="modalNuevoCorredor" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Registrar Nuevo Corredor</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formCrearCorredor">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del Corredor (o Empresa)</label>
+                            <input type="text" id="newNombre" class="form-control" required placeholder="Ej: Juan Pérez">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo Electrónico</label>
+                            <input type="email" id="newEmail" class="form-control" required placeholder="juan@correo.cl">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" id="newPass" class="form-control" required placeholder="******">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Crear Cuenta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const API_URL = '/api';
         let propiedadesGlobales = [];
 
         // --- 1. LÓGICA DE LOGIN ---
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        async function handleLogin(e, tipoFormulario) {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            
+            const emailInput = tipoFormulario === 'admin' ? 'emailAdmin' : 'emailCorredor';
+            const passInput = tipoFormulario === 'admin' ? 'passAdmin' : 'passCorredor';
+
+            const email = document.getElementById(emailInput).value;
+            const password = document.getElementById(passInput).value;
 
             try {
                 const res = await fetch(`${API_URL}/login`, {
@@ -149,31 +222,51 @@
                     body: JSON.stringify({ email, password })
                 });
 
+                const data = await res.json();
+
                 if (res.ok) {
-                    const data = await res.json();
-                    localStorage.setItem('adminToken', data.token);
-                    mostrarDashboard();
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('rolUsuario', data.rol);
+                    localStorage.setItem('nombreUsuario', data.nombre);
+
+                    // REDIRECCIÓN SEGÚN ROL
+                    if (data.rol === 'admin') {
+                        mostrarDashboard();
+                    } else if (data.rol === 'corredor') {
+                        window.location.href = '/panel-corredor';
+                    }
                 } else {
-                    document.getElementById('errorMsg').innerText = "Credenciales incorrectas.";
+                    document.getElementById('errorMsg').innerText = data.error || "Error de acceso.";
                 }
             } catch (error) {
+                console.error(error);
                 document.getElementById('errorMsg').innerText = "Error de conexión.";
             }
-        });
+        }
 
         function mostrarDashboard() {
-            if(!localStorage.getItem('adminToken')) return;
+            const token = localStorage.getItem('token');
+            const rol = localStorage.getItem('rolUsuario');
+
+            if (!token) return;
+            
+            // Seguridad: Si entra un corredor aquí, lo mandamos a su panel
+            if (rol === 'corredor') {
+                window.location.href = '/panel-corredor';
+                return;
+            }
+
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('dashboardSection').style.display = 'block';
             cargarPropiedadesAdmin();
         }
 
         function cerrarSesion() {
-            localStorage.removeItem('adminToken');
-            location.reload();
+            localStorage.clear();
+            location.reload(); 
         }
 
-        // --- 2. LÓGICA DE GESTIÓN (CARGAR) ---
+        // --- 2. GESTIÓN PROPIEDADES ---
         async function cargarPropiedadesAdmin() {
             try {
                 const res = await fetch(`${API_URL}/propiedades`);
@@ -185,6 +278,10 @@
                 propiedadesGlobales.forEach(p => {
                     const primeraFoto = p.imagen ? p.imagen.split(/[,\s\n]+/)[0] : '';
                     
+                    const etiquetaDueño = p.corredora && p.corredora !== 'MGPropiedades' 
+                        ? `<span class="badge bg-info text-dark mb-1"><i class="bi bi-person"></i> ${p.corredora}</span>` 
+                        : `<span class="badge bg-secondary mb-1">MG Propiedades</span>`;
+
                     lista.innerHTML += `
                         <div class="col-md-6">
                             <div class="card h-100 shadow-sm">
@@ -194,14 +291,15 @@
                                     </div>
                                     <div class="col-8">
                                         <div class="card-body p-2">
-                                            <h6 class="card-title text-truncate">${p.titulo}</h6>
+                                            ${etiquetaDueño}
+                                            <h6 class="card-title text-truncate mb-1">${p.titulo}</h6>
                                             <p class="card-text small m-0 text-muted">${p.precio} - ${p.operacion}</p>
                                             
                                             <div class="mt-2">
-                                                <button onclick="prepararEdicion(${p.id})" class="btn btn-warning btn-sm text-white">
+                                                <button onclick="prepararEdicion(${p.id})" class="btn btn-warning btn-sm text-white" title="Editar">
                                                     <i class="bi bi-pencil"></i>
                                                 </button>
-                                                <button onclick="eliminarPropiedad(${p.id})" class="btn btn-danger btn-sm">
+                                                <button onclick="eliminarPropiedad(${p.id})" class="btn btn-danger btn-sm" title="Eliminar">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </div>
@@ -213,15 +311,14 @@
                     `;
                 });
             } catch (error) {
-                console.error("Error cargando propiedades:", error);
+                console.error("Error:", error);
             }
         }
 
-        // --- 3. CREAR / EDITAR (SUBMIT) ---
+        // --- 3. CREAR / EDITAR PROPIEDAD ---
         document.getElementById('propiedadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const token = localStorage.getItem('adminToken');
-            
+            const token = localStorage.getItem('token');
             const editId = document.getElementById('editId').value;
             
             let rawImages = document.getElementById('imagen').value;
@@ -233,11 +330,11 @@
                 tipo: document.getElementById('tipo').value,
                 precio: document.getElementById('precio').value,
                 ubicacion: document.getElementById('ubicacion').value,
-                descripcion: document.getElementById('descripcion').value, // AQUÍ SE GUARDA LA DESCRIPCIÓN
+                descripcion: document.getElementById('descripcion').value,
                 dormitorios: parseInt(document.getElementById('dormitorios').value) || 0,
                 banos: parseInt(document.getElementById('banos').value) || 0,
                 imagen: cleanImages,
-                corredora: "MGPropiedades"
+                corredora: "MGPropiedades" 
             };
 
             let url = `${API_URL}/propiedades`;
@@ -246,6 +343,7 @@
             if (editId) {
                 url = `${API_URL}/propiedades/${editId}`;
                 method = 'PUT';
+                delete datosPropiedad.corredora; // No cambiar dueño al editar
             }
 
             const res = await fetch(url, {
@@ -258,36 +356,71 @@
             });
 
             if(res.ok) {
-                alert(editId ? "Propiedad actualizada!" : "Propiedad creada!");
+                alert(editId ? "Actualizado" : "Creado");
                 cancelarEdicion();
                 cargarPropiedadesAdmin();
             } else {
-                alert("Error al guardar.");
+                alert("Error al guardar");
             }
         });
 
-        // --- 4. FUNCIONES DE EDICIÓN ---
+        // --- 4. CREAR CORREDOR (NUEVO) ---
+        document.getElementById('formCrearCorredor').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            
+            const nombre = document.getElementById('newNombre').value;
+            const email = document.getElementById('newEmail').value;
+            const password = document.getElementById('newPass').value;
+
+            if(!confirm(`¿Crear cuenta para ${nombre}?`)) return;
+
+            try {
+                const res = await fetch(`${API_URL}/usuarios`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ nombre, email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert("¡Corredor creado exitosamente!");
+                    document.getElementById('formCrearCorredor').reset();
+                    // Cerrar modal
+                    const modalEl = document.getElementById('modalNuevoCorredor');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    modal.hide();
+                } else {
+                    alert("Error: " + data.error);
+                }
+            } catch (error) {
+                alert("Error de conexión");
+            }
+        });
+
+        // --- FUNCIONES AUXILIARES ---
         function prepararEdicion(id) {
             const p = propiedadesGlobales.find(prop => prop.id === id);
             if(!p) return;
 
-            // Llenar formulario
             document.getElementById('editId').value = p.id;
             document.getElementById('titulo').value = p.titulo;
             document.getElementById('operacion').value = p.operacion;
             document.getElementById('tipo').value = p.tipo;
             document.getElementById('precio').value = p.precio;
             document.getElementById('ubicacion').value = p.ubicacion;
-            document.getElementById('descripcion').value = p.descripcion || ''; // AQUÍ SE CARGA LA DESCRIPCIÓN
+            document.getElementById('descripcion').value = p.descripcion || '';
             document.getElementById('dormitorios').value = p.dormitorios;
             document.getElementById('banos').value = p.banos;
             document.getElementById('imagen').value = p.imagen;
 
-            // Cambiar textos de botones
             document.getElementById('formTitle').innerText = "Editar Propiedad";
             document.getElementById('btnSubmit').innerText = "Guardar Cambios";
-            document.getElementById('btnSubmit').classList.remove('btn-success');
-            document.getElementById('btnSubmit').classList.add('btn-warning');
+            document.getElementById('btnSubmit').className = "btn btn-warning w-100 text-white";
             document.getElementById('btnCancelar').style.display = 'block';
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -296,18 +429,15 @@
         function cancelarEdicion() {
             document.getElementById('propiedadForm').reset();
             document.getElementById('editId').value = '';
-            
             document.getElementById('formTitle').innerText = "Nueva Propiedad";
-            document.getElementById('btnSubmit').innerText = "Publicar Propiedad";
-            document.getElementById('btnSubmit').classList.add('btn-success');
-            document.getElementById('btnSubmit').classList.remove('btn-warning');
+            document.getElementById('btnSubmit').innerText = "Publicar";
+            document.getElementById('btnSubmit').className = "btn btn-success w-100";
             document.getElementById('btnCancelar').style.display = 'none';
         }
 
-        // --- 5. ELIMINAR ---
         async function eliminarPropiedad(id) {
-            if(!confirm("¿Eliminar propiedad permanentemente?")) return;
-            const token = localStorage.getItem('adminToken');
+            if(!confirm("¿Eliminar definitivamente?")) return;
+            const token = localStorage.getItem('token');
 
             const res = await fetch(`${API_URL}/propiedades/${id}`, {
                 method: 'DELETE',
@@ -316,24 +446,19 @@
 
             if(res.ok) {
                 cargarPropiedadesAdmin();
-                if(document.getElementById('editId').value == id) {
-                    cancelarEdicion();
-                }
             } else {
                 alert("Error al eliminar");
             }
         }
 
-        // --- 6. UTILIDADES ---
         function formatoPesos(input) {
             let valor = input.value.replace(/\D/g, "");
-            if (valor) {
-                valor = "$" + valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            }
+            if (valor) valor = "$" + valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
             input.value = valor;
         }
 
-        if(localStorage.getItem('adminToken')) {
+        // Inicio automático
+        if(localStorage.getItem('token')) {
             mostrarDashboard();
         }
     </script>

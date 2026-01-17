@@ -26,4 +26,6 @@ model Usuario {
   id       Int    @id @default(autoincrement())
   email    String @unique
   password String
+  nombre   String? // <--- Nuevo
+  rol      String  @default("corredor") // <--- Nuevo (admin o corredor)
 }
