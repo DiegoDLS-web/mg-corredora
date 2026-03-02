@@ -60,7 +60,7 @@
 
         /* HERO SECTION (CONTENEDOR) */
         .hero-section {
-            position: relative; /* Necesario para que el fondo absoluto funcione */
+            position: relative; 
             min-height: 600px; 
             display: flex; 
             flex-direction: column; 
@@ -68,33 +68,31 @@
             justify-content: center; 
             color: white; 
             text-align: center;
-            overflow: hidden; /* Para que la imagen no se salga */
-            background-color: var(--color-primario); /* Fondo base azul por si tarda en cargar */
+            overflow: hidden; 
+            background-color: var(--color-primario); 
         }
         
-        /* NUEVO: CAPA DE FONDO QUE SÍ ROTA SUAVEMENTE */
+        /* FONDO ROTATIVO */
         #fondo-rotativo {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0; /* Detrás del texto */
+            z-index: 0; 
             
-            /* Imagen Inicial */
             background: linear-gradient(rgba(9, 12, 15, 0.35), rgba(17, 23, 29, 0.35)), url('https://res.cloudinary.com/dtvdzpdyq/image/upload/v1768505825/WhatsApp_Image_2026-01-15_at_16.35.34_h7ea1x.jpg');
             background-size: cover;
             background-position: center;
             
-            /* LA MAGIA: Transición de opacidad */
             transition: opacity 1s ease-in-out;
             opacity: 1;
         }
 
-        /* CONTENIDO DEL HERO (Para que quede encima del fondo) */
+        /* CONTENIDO DEL HERO */
         .hero-content-layer {
             position: relative;
-            z-index: 2; /* Encima del fondo */
+            z-index: 2; 
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -139,57 +137,38 @@
         }
         .btn-contacto-card:hover { background: var(--color-primario); color: white; }
 
-        /* ESTILOS PARA EL MODAL DE GALERÍA */
+        /* EFECTO ZOOM EN FOTOS */
+        .card-propiedad .position-relative { overflow: hidden; }
+        .card-propiedad img { transition: transform 0.5s ease; }
+        .card-propiedad:hover img { transform: scale(1.1); }
+
+        /* MODAL DE GALERÍA */
         .carousel-item img { height: 400px; object-fit: contain; background-color: #000; }
         .modal-detalles-content { border-radius: 0; border: none; overflow: hidden; }
         .modal-header { border-bottom: none; background-color: #fff; }
         .btn-wsp-modal { background-color: #25D366; color: white; font-weight: 700; border: none; padding: 10px 30px; border-radius: 50px; transition: 0.3s; }
         .btn-wsp-modal:hover { background-color: #128C7E; color: white; transform: scale(1.05); }
-
-        /* CLIENTES */
-        .clientes-section { background-color: white; }
-        .card-cliente { text-align: center; padding: 40px 20px; border: 1px solid #eee; background: #fff; }
-        .avatar-cliente { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 20px; border: 2px solid var(--color-primario); }
-        .estrellas { color: #f1c40f; margin-bottom: 15px; }
+        #modalDetalle .carousel-item { overflow: hidden; cursor: zoom-in; }
+        #modalDetalle .carousel-item img { transition: transform 0.4s ease; transform-origin: center center; }
+        #modalDetalle .carousel-item:hover img { transform: scale(1.5); }
 
         /* FOOTER */
         footer { background-color: #1a1a1a; color: #bbb; font-size: 0.9rem; }
         footer h5 { color: white; text-transform: uppercase; font-weight: 700; margin-bottom: 20px; letter-spacing: 1px; }
         footer ul li { margin-bottom: 10px; }
         footer i { color: var(--color-primario); margin-right: 10px; }
-        /* --- EFECTO ZOOM EN FOTOS --- */
-        
-        /* 1. Aseguramos que la imagen no se salga del marco al crecer */
-        .card-propiedad .position-relative {
-            overflow: hidden;
-        }
 
-        /* 2. Preparamos la imagen para moverse suavemente */
-        .card-propiedad img {
-            transition: transform 0.5s ease; /* 0.5s es la duración, 'ease' es la suavidad */
+        /* BOTON FLOTANTE WSP */
+        .btn-wsp-flotante {
+            position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: white; width: 60px; height: 60px;
+            border-radius: 50%; text-align: center; font-size: 30px; line-height: 60px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 1000; transition: all 0.3s ease; text-decoration: none; animation: pulse 2s infinite;
         }
-
-        /* 3. Al pasar el mouse sobre la tarjeta, la imagen crece un 10% */
-        .card-propiedad:hover img {
-            transform: scale(1.1);
-        }
-        /* --- ZOOM EN GALERÍA (MODAL) --- */
-        
-        /* 1. El contenedor recorta lo que sobre (para que no tape el texto) */
-        #modalDetalle .carousel-item {
-            overflow: hidden;
-            cursor: zoom-in; /* El cursor cambia a una lupa */
-        }
-
-        /* 2. La imagen se prepara para crecer */
-        #modalDetalle .carousel-item img {
-            transition: transform 0.4s ease; /* Suavidad del efecto */
-            transform-origin: center center; /* Crece desde el centro */
-        }
-
-        /* 3. Al pasar el mouse, crece un 50% */
-        #modalDetalle .carousel-item:hover img {
-            transform: scale(1.5);
+        .btn-wsp-flotante:hover { background-color: #128C7E; color: white; transform: scale(1.1); box-shadow: 0 6px 14px rgba(0,0,0,0.4); }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
         }
     </style>
 </head>
@@ -199,13 +178,10 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2" href="#">
                 <img src="logoweb4.png" alt="MG Logo" style="height: 80px; width: auto;">
-               
             </a>
-            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center gap-2">
                     <li class="nav-item"><a class="nav-link active" href="#">Inicio</a></li>
@@ -213,13 +189,11 @@
                     <li class="nav-item"><a class="nav-link" href="#nosotros">Nosotros</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
                     <li class="nav-item"><a class="nav-link" href="#proyectos">Proyectos</a></li> 
-                    
                     <li class="nav-item">
                         <a class="nav-link nav-link-vender fw-bold" href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20quiero%20vender%20mi%20casa%20con%20ustedes" target="_blank">
                             ¿Vendes tu casa?
                         </a>
                     </li>
-
                     <li class="nav-item ms-3">
                         <button class="btn btn-alianza" data-bs-toggle="modal" data-bs-target="#modalAlianza">
                             Soy Corredor
@@ -232,10 +206,8 @@
 
     <header class="hero-section">
         <div id="fondo-rotativo"></div>
-
         <div class="container hero-content-layer">
             <h1 class="hero-title">Bienvenido a tu nueva inversión</h1>
-            
             <div class="search-wrapper">
                 <div class="row g-2">
                     <div class="col-md-3">
@@ -278,9 +250,7 @@
                     <span id="contador-propiedades" class="badge rounded-0 px-3 py-2" style="background-color: var(--color-primario);">Cargando catálogo...</span>
                 </div>
             </div>
-            
-            <div class="row g-4" id="contenedor-propiedades">
-                </div>
+            <div class="row g-4" id="contenedor-propiedades"></div>
         </div>
     </section>
 
@@ -290,15 +260,11 @@
                 <div class="col-md-6 mb-4">
                     <span class="text-uppercase fw-bold small" style="color: var(--color-primario);">Sobre Nosotros</span>
                     <h2 class="fw-bold mb-4 display-6">Quiénes Somos</h2>
-                    
                     <p class="text-muted lead"><strong>Somos MG Corredor de Propiedades</strong></p>
                     <p class="text-muted">Tu corredora inmobiliaria de confianza, especializada en la compra, venta y arriendo de propiedades residenciales y comerciales. Contamos con años de experiencia en el mercado, ofreciendo un servicio profesional, cercano y transparente, enfocado principalmente en la Región del Biobío con alcance a nivel nacional.</p>
-                    
                     <hr class="my-4">
-
                     <h5 class="fw-bold" style="color: var(--color-primario);">Nuestra Propuesta de Valor</h5>
                     <p class="text-muted">Entregamos una asesoría completa e integral, acompañando a nuestros clientes desde la primera consulta hasta el cierre exitoso de cada operación. Nuestro objetivo es que cada proceso sea claro, seguro y eficiente.</p>
-
                     <h5 class="fw-bold mt-4" style="color: var(--color-primario);">Nuestros Servicios</h5>
                     <ul class="list-unstyled lista-servicios text-muted">
                         <li><i class="bi bi-check-circle-fill"></i> Compra de propiedades</li>
@@ -307,14 +273,12 @@
                         <li><i class="bi bi-check-circle-fill"></i> Asesoría legal, comercial y administrativa</li>
                         <li><i class="bi bi-check-circle-fill"></i> Apoyo en procesos bancarios y notariales</li>
                     </ul>
-
                     <div class="mt-4 p-3 bg-light border-start border-5 border-primary">
                         <p class="text-muted small m-0">
                             <strong>Nuestro Compromiso:</strong> Trabajamos con ética, responsabilidad y profesionalismo. Nos comprometemos a proteger los intereses de nuestros clientes y a entregar un servicio ágil, transparente y confiable. <br>
                             <em>"Tu tranquilidad inmobiliaria, en manos expertas"</em>
                         </p>
                     </div>
-
                     <div class="row mt-4">
                         <div class="col-4 text-center">
                             <i class="bi bi-patch-check fs-1" style="color: var(--color-primario);"></i>
@@ -345,9 +309,7 @@
                         <div class="card-header text-white text-center py-3" style="background-color: var(--color-primario);">
                             <h4 class="m-0 fw-bold text-uppercase" style="letter-spacing: 1px;">Contacto</h4>
                         </div>
-                        
                         <div class="card-body p-4 text-center bg-white">
-                            
                             <div class="mb-3">
                                 <a href="mailto:mgcorredordepropiedades@gmail.com" class="text-decoration-none d-flex align-items-center justify-content-center gap-2 group-hover">
                                     <div style="background: #eef2f7; padding: 10px; border-radius: 50%;">
@@ -356,7 +318,6 @@
                                     <span class="text-secondary" style="font-size: 0.95rem; word-break: break-all;">mgcorredordepropiedades@gmail.com</span>
                                 </a>
                             </div>
-                            
                             <div class="mb-4">
                                 <a href="https://wa.me/56975575540" target="_blank" class="text-decoration-none d-flex align-items-center justify-content-center gap-2">
                                     <div style="background: #e6fffa; padding: 10px; border-radius: 50%;">
@@ -365,9 +326,7 @@
                                     <span class="text-dark fw-bold fs-5">+569 75575540</span>
                                 </a>
                             </div>
-
                             <hr class="opacity-25 mx-auto w-75">
-
                             <div class="mt-3">
                                 <div class="text-uppercase small fw-bold text-muted mb-1">
                                     <i class="bi bi-clock me-1"></i> Horario de Atención
@@ -376,7 +335,6 @@
                                     De 8:30 hrs. a 19:00 hrs.
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -389,7 +347,6 @@
             <div class="text-center mb-5">
                 <h2 class="section-title">Lo que dicen nuestros clientes</h2>
             </div>
-            
             <div class="row justify-content-center">
                 <div class="col-md-8 text-center py-5 bg-white shadow-sm border-start border-5 border-warning">
                     <div class="mb-4 text-warning">
@@ -398,11 +355,9 @@
                         <i class="bi bi-star-fill fs-2 mx-2"></i> <i class="bi bi-star-fill fs-3 mx-1"></i>
                         <i class="bi bi-star-fill fs-4"></i>
                     </div>
-                    
                     <h3 class="fw-bold text-uppercase text-muted mb-3" style="letter-spacing: 2px;">
                         Próximamente
                     </h3>
-                    
                     <p class="text-secondary w-75 mx-auto">
                         Estamos trabajando arduamente para brindar el mejor servicio. 
                         Muy pronto podrás leer las historias de éxito de quienes confiaron en <strong>MGPropiedades</strong> para encontrar su nuevo hogar.
@@ -479,8 +434,7 @@
                 </div>
                 <div class="modal-body p-0">
                     <div id="carouselPropiedad" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner" id="carouselInner">
-                            </div>
+                        <div class="carousel-inner" id="carouselInner"></div>
                         <button class="carousel-control-prev" type="button" data-bs-target="#carouselPropiedad" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         </button>
@@ -501,8 +455,7 @@
                         </div>
                         <p class="text-muted mb-1"><i class="bi bi-geo-alt-fill text-danger"></i> <span id="modalUbicacion"></span></p>
                         
-                        <div id="modalDescripcion" class="mt-3 mb-4 p-3 bg-light border rounded" style="word-wrap: break-word; overflow-wrap: break-word;">
-                        </div>
+                        <div id="modalDescripcion" class="mt-3 mb-4 p-3 bg-light border rounded" style="word-wrap: break-word; overflow-wrap: break-word;"></div>
 
                         <div class="d-grid gap-2 mt-4">
                             <a href="#" id="btnWspFinal" target="_blank" class="btn btn-wsp-modal">
@@ -523,7 +476,6 @@
         let todasLasPropiedades = [];
         let operacionActual = ''; 
         let valorUF_Hoy = 0;
-
         let modalDetalle; 
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -533,7 +485,6 @@
             cargarPropiedades();
         });
 
-        // --- Obtener UF ---
         async function obtenerValorUF() {
             try {
                 const res = await fetch('https://mindicador.cl/api/uf');
@@ -545,23 +496,40 @@
             }
         }
 
-        // --- Formateador de Precio ---
+        // --- Formateador de Precio MEJORADO ---
         function formatearPrecio(precioString) {
-            if (!precioString.includes('$')) return precioString;
+            if (!precioString) return "Precio no disponible";
+
+            // Si el precio ya viene con la palabra "UF", lo dejamos tal cual con un estilo resaltado
+            if (precioString.toUpperCase().includes('UF')) {
+                return `<span class="text-primary fw-bold">${precioString}</span>`;
+            }
+
+            // Extraemos todos los números del texto ingresado (tenga signo $ o no)
             const pesosLimpios = parseInt(precioString.replace(/\D/g, ''));
             
-            if (!valorUF_Hoy || isNaN(pesosLimpios)) return precioString;
+            // Si el texto no tenía números válidos, mostramos lo que se escribió originalmente
+            if (!valorUF_Hoy || isNaN(pesosLimpios)) {
+                return `<span class="text-primary fw-bold">${precioString}</span>`;
+            }
 
+            // Calculamos la conversión a UF
             const valorEnUF = (pesosLimpios / valorUF_Hoy).toFixed(0); 
             const ufFormateada = new Intl.NumberFormat('es-CL').format(valorEnUF);
             
-            return `<span class="text-primary">UF ${ufFormateada}</span> <small class="text-muted d-block fs-6">${precioString}</small>`;
+            // Le damos formato de dinero al monto en pesos por si lo subieron sin puntos ni signos
+            const precioPesosFormateado = precioString.includes('$') ? precioString : '$' + new Intl.NumberFormat('es-CL').format(pesosLimpios);
+
+            return `<span class="text-primary">UF ${ufFormateada}</span> <small class="text-muted d-block fs-6">${precioPesosFormateado}</small>`;
         }
         
         async function cargarPropiedades() {
             try {
                 const res = await fetch(`${API_URL}/propiedades`);
-                todasLasPropiedades = (await res.json()).reverse(); 
+                
+                // AQUÍ ELIMINAMOS EL ".reverse()" para que queden las más nuevas primero
+                todasLasPropiedades = await res.json(); 
+                
                 document.getElementById('filtroOperacion').value = operacionActual; 
                 filtrarPropiedades();
             } catch (error) {
@@ -570,9 +538,7 @@
             }
         }
 
-        function setOperacion(op) {
-            operacionActual = op;
-        }
+        function setOperacion(op) { operacionActual = op; }
 
         function filtrarPropiedades() {
             const ubicacion = document.getElementById('inputUbicacion').value.toLowerCase();
@@ -580,7 +546,6 @@
             
             const filtradas = todasLasPropiedades.filter(p => {
                 const coincideOperacion = operacionActual === "" || p.operacion === operacionActual;
-
                 return coincideOperacion &&
                        (p.ubicacion.toLowerCase().includes(ubicacion) || p.titulo.toLowerCase().includes(ubicacion)) &&
                        (tipo === "" || p.tipo === tipo);
@@ -692,73 +657,23 @@
         ];
 
         let indiceActual = 0;
-        // Filtro azul más claro (0.35) para que se noten las fotos
         const filtroAzul = "linear-gradient(rgba(0,51,102,0.35), rgba(0,51,102,0.35))";
-        
-        // Seleccionamos la capa del fondo
         const fondo = document.getElementById('fondo-rotativo');
 
         function cambiarFondo() {
-            // 1. Desvanecer la imagen actual (Opacidad 0)
             fondo.style.opacity = 0;
-            
-            // 2. Esperar 1 segundo mientras está invisible
             setTimeout(() => {
-                // Cambiar la imagen "en la oscuridad"
                 indiceActual = (indiceActual + 1) % imagenes.length;
                 const nuevaImagen = `url('${imagenes[indiceActual]}')`;
-                
-                // Aplicar imagen + filtro
                 fondo.style.background = `${filtroAzul}, ${nuevaImagen} center/cover no-repeat`;
-                
-                // 3. Volver a mostrar (Opacidad 1)
                 fondo.style.opacity = 1;
-            }, 1000); // Este tiempo debe coincidir con el "transition: 1s" del CSS
+            }, 1000); 
         }
 
-        // Ejecutar cada 5 segundos
         setInterval(cambiarFondo, 5000);
     </script>
     <a href="https://wa.me/56975575540?text=Hola,%20tengo%20una%20duda%20sobre%20una%20propiedad" class="btn-wsp-flotante" target="_blank">
         <i class="bi bi-whatsapp"></i>
     </a>
-
-    <style>
-        .btn-wsp-flotante {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: #25D366; /* Verde WhatsApp */
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            text-align: center;
-            font-size: 30px;
-            line-height: 60px; /* Centra el icono verticalmente */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 1000; /* Asegura que flote sobre todo */
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .btn-wsp-flotante:hover {
-            background-color: #128C7E; /* Verde más oscuro al pasar el mouse */
-            color: white;
-            transform: scale(1.1); /* Efecto de crecimiento */
-            box-shadow: 0 6px 14px rgba(0,0,0,0.4);
-        }
-
-        /* Animación suave de "latido" para llamar la atención */
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-        }
-        
-        .btn-wsp-flotante {
-            animation: pulse 2s infinite;
-        }
-    </style>
 </body>
 </html>
