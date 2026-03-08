@@ -16,22 +16,15 @@
         
         /* ESTILOS DEL CONTADOR DISCRETO */
         .contador-flotante {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: rgba(33, 37, 41, 0.85); /* Gris oscuro semitransparente */
-            color: white;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            z-index: 1050;
-            display: none; /* Oculto hasta que se inicie sesión */
-            align-items: center;
-            gap: 8px;
-            backdrop-filter: blur(4px);
+            position: fixed; bottom: 20px; right: 20px;
+            background-color: rgba(33, 37, 41, 0.85); color: white;
+            padding: 8px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1050; display: none; 
+            align-items: center; gap: 8px; backdrop-filter: blur(4px);
         }
+
+        /* DISEÑO DE LOS CUADROS DE CARACTERÍSTICAS */
+        .input-group-text { width: 40px; justify-content: center; }
     </style>
 </head>
 <body>
@@ -95,16 +88,41 @@
                                 <div class="col"><select id="operacion" class="form-select"><option>Venta</option><option>Arriendo</option></select></div>
                                 <div class="col"><select id="tipo" class="form-select"><option>Casa</option><option>Departamento</option><option>Terreno</option></select></div>
                             </div>
-                            <div class="mb-2"><input type="text" id="precio" class="form-control" placeholder="Precio" required onkeyup="formatoPesos(this)"></div>
+                            <div class="mb-2"><input type="text" id="precio" class="form-control" placeholder="Precio (Ej: $45.000.000 o UF 2.500)" required onkeyup="formatoPesos(this)"></div>
                             <div class="mb-2"><input type="text" id="ubicacion" class="form-control" placeholder="Ubicación" required></div>
-                            <div class="mb-2"><textarea id="descripcion" class="form-control" placeholder="Descripción..."></textarea></div>
-                            <div class="row mb-2">
-                                <div class="col"><input type="number" id="dormitorios" class="form-control" placeholder="Dorm" value="0"></div>
-                                <div class="col"><input type="number" id="banos" class="form-control" placeholder="Baños" value="0"></div>
+                            <div class="mb-2"><textarea id="descripcion" class="form-control" placeholder="Descripción de la propiedad..."></textarea></div>
+                            
+                            <label class="small fw-bold text-muted mb-1 mt-2">Características Principales</label>
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <div class="input-group input-group-sm shadow-sm" title="Dormitorios">
+                                        <span class="input-group-text bg-white text-primary border-end-0"><i class="bi bi-door-closed"></i></span>
+                                        <input type="number" id="dormitorios" class="form-control border-start-0" placeholder="Dormitorios">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group input-group-sm shadow-sm" title="Baños">
+                                        <span class="input-group-text bg-white text-primary border-end-0"><i class="bi bi-droplet"></i></span>
+                                        <input type="number" id="banos" class="form-control border-start-0" placeholder="Baños">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group input-group-sm shadow-sm" title="Estacionamientos">
+                                        <span class="input-group-text bg-white text-primary border-end-0"><i class="bi bi-car-front"></i></span>
+                                        <input type="number" id="estacionamientos" class="form-control border-start-0" placeholder="Estacionam.">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group input-group-sm shadow-sm" title="Metros Cuadrados (m²)">
+                                        <span class="input-group-text bg-white text-primary border-end-0"><i class="bi bi-arrows-fullscreen"></i></span>
+                                        <input type="number" id="metros" class="form-control border-start-0" placeholder="Metros m²">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3"><textarea id="imagen" class="form-control" placeholder="URLs imágenes..." required></textarea></div>
+
+                            <div class="mb-3"><textarea id="imagen" class="form-control" placeholder="URLs de imágenes (separadas por una coma o espacio)..." required></textarea></div>
                             <div class="d-flex gap-2">
-                                <button type="submit" id="btnSubmit" class="btn btn-success w-100">Publicar</button>
+                                <button type="submit" id="btnSubmit" class="btn btn-success w-100 fw-bold">Publicar Propiedad</button>
                                 <button type="button" id="btnCancelar" onclick="cancelarEdicion()" class="btn btn-secondary" style="display:none;">Cancelar</button>
                             </div>
                         </form>
@@ -112,7 +130,7 @@
                 </div>
             </div>
             <div class="col-md-8">
-                <h4>Todas las Propiedades</h4>
+                <h4 class="mb-3 fw-bold text-muted">Todas las Propiedades</h4>
                 <div id="listaAdmin" class="row g-3"></div>
             </div>
         </div>
@@ -124,14 +142,14 @@
 
     <div class="modal fade" id="modalCorredor" tabindex="-1">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content border-0" style="border-radius: 12px;">
                 <div class="modal-header bg-dark text-white"><h5 class="modal-title">Nuevo Corredor</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
                 <div class="modal-body">
                     <form id="formCrearCorredor">
                         <div class="mb-3"><input type="text" id="newNombre" class="form-control" placeholder="Nombre" required></div>
                         <div class="mb-3"><input type="email" id="newEmail" class="form-control" placeholder="Email" required></div>
                         <div class="mb-3"><input type="password" id="newPass" class="form-control" placeholder="Contraseña" required></div>
-                        <button type="submit" class="btn btn-primary w-100">Crear</button>
+                        <button type="submit" class="btn btn-primary w-100">Crear Corredor</button>
                     </form>
                 </div>
             </div>
@@ -164,7 +182,6 @@
                 const data = await res.json();
                 
                 if(res.ok) {
-                    // VALIDACIÓN DE PUERTA
                     if(source === 'corredor' && data.rol === 'admin') {
                         document.getElementById('errorMsg').innerText = "Eres Admin. Usa la pestaña Admin."; return;
                     }
@@ -187,9 +204,9 @@
         function mostrarDashboard() {
             document.getElementById('loginSection').style.display='none';
             document.getElementById('dashboardSection').style.display='block';
-            document.getElementById('badgeVisitas').style.display='flex'; // Muestra el contador
+            document.getElementById('badgeVisitas').style.display='flex'; 
             cargarPropiedades();
-            cargarVisitas(); // Llama al servidor para obtener las visitas
+            cargarVisitas(); 
         }
         
         function cerrarSesion() { localStorage.clear(); location.reload(); }
@@ -202,12 +219,10 @@
                     const data = await res.json();
                     document.getElementById('numeroVisitas').innerText = data.visitas;
                 }
-            } catch(e) { 
-                console.error("Error cargando visitas"); 
-            }
+            } catch(e) { console.error("Error cargando visitas"); }
         }
 
-        // CARGAR PROPIEDADES (ADMIN VE TODO)
+        // CARGAR PROPIEDADES
         async function cargarPropiedades() {
             const res = await fetch(`${API_URL}/propiedades`);
             propiedades = (await res.json()).reverse();
@@ -215,20 +230,21 @@
             lista.innerHTML = '';
             
             propiedades.forEach(p => {
-                const foto = p.imagen ? p.imagen.split(',')[0] : '';
+                const foto = p.imagen ? p.imagen.split(/[,\s\n]+/)[0] : '';
                 const tag = p.corredora !== 'MGPropiedades' ? 
                     `<span class="badge bg-info text-dark mb-1">${p.corredora}</span>` : 
                     `<span class="badge bg-secondary mb-1">MG</span>`;
                     
                 lista.innerHTML += `
-                    <div class="col-md-6"><div class="card h-100 shadow-sm"><div class="row g-0 h-100">
-                        <div class="col-4"><img src="${foto}" class="img-fluid h-100 admin-img-preview"></div>
-                        <div class="col-8"><div class="card-body p-2">
-                            ${tag} <h6 class="text-truncate">${p.titulo}</h6>
-                            <small class="text-muted">${p.precio} - ${p.operacion}</small>
-                            <div class="mt-2">
-                                <button onclick="editar(${p.id})" class="btn btn-warning btn-sm text-white"><i class="bi bi-pencil"></i></button>
-                                <button onclick="eliminar(${p.id})" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                    <div class="col-md-6"><div class="card h-100 shadow-sm border-0"><div class="row g-0 h-100">
+                        <div class="col-4"><img src="${foto}" class="img-fluid h-100 admin-img-preview rounded-start"></div>
+                        <div class="col-8"><div class="card-body p-3">
+                            ${tag} <h6 class="text-truncate fw-bold">${p.titulo}</h6>
+                            <small class="text-primary fw-bold">${p.precio}</small><br>
+                            <small class="text-muted"><i class="bi bi-geo-alt"></i> ${p.ubicacion}</small>
+                            <div class="mt-2 d-flex gap-1">
+                                <button onclick="editar(${p.id})" class="btn btn-outline-warning btn-sm border-0"><i class="bi bi-pencil fs-6"></i></button>
+                                <button onclick="eliminar(${p.id})" class="btn btn-outline-danger btn-sm border-0"><i class="bi bi-trash fs-6"></i></button>
                             </div>
                         </div></div>
                     </div></div></div>`;
@@ -249,6 +265,8 @@
                 descripcion: document.getElementById('descripcion').value,
                 dormitorios: parseInt(document.getElementById('dormitorios').value)||0,
                 banos: parseInt(document.getElementById('banos').value)||0,
+                estacionamientos: parseInt(document.getElementById('estacionamientos').value)||0,
+                metros: parseInt(document.getElementById('metros').value)||0,
                 imagen: document.getElementById('imagen').value.replace(/\n/g,','),
                 corredora: "MGPropiedades"
             };
@@ -260,7 +278,13 @@
             const res = await fetch(url, {
                 method, headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify(data)
             });
-            if(res.ok) { alert(id?"Editado":"Creado"); cancelarEdicion(); cargarPropiedades(); }
+            if(res.ok) { 
+                alert(id ? "Propiedad Actualizada" : "Propiedad Creada Exitosamente"); 
+                cancelarEdicion(); 
+                cargarPropiedades(); 
+            } else {
+                alert("Error al guardar. Asegúrate de haber actualizado el schema.prisma");
+            }
         });
 
         // CREAR CORREDOR
@@ -275,7 +299,7 @@
             const res = await fetch(`${API_URL}/usuarios`, {
                 method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify(body)
             });
-            if(res.ok) { alert("Creado!"); bootstrap.Modal.getInstance(document.getElementById('modalCorredor')).hide(); }
+            if(res.ok) { alert("Corredor Creado!"); bootstrap.Modal.getInstance(document.getElementById('modalCorredor')).hide(); }
         });
 
         function editar(id) {
@@ -286,28 +310,31 @@
             document.getElementById('tipo').value = p.tipo;
             document.getElementById('precio').value = p.precio;
             document.getElementById('ubicacion').value = p.ubicacion;
-            document.getElementById('descripcion').value = p.descripcion||'';
-            document.getElementById('dormitorios').value = p.dormitorios;
-            document.getElementById('banos').value = p.banos;
+            document.getElementById('descripcion').value = p.descripcion || '';
+            document.getElementById('dormitorios').value = p.dormitorios || '';
+            document.getElementById('banos').value = p.banos || '';
+            document.getElementById('estacionamientos').value = p.estacionamientos || '';
+            document.getElementById('metros').value = p.metros || '';
             document.getElementById('imagen').value = p.imagen;
             
-            document.getElementById('formTitle').innerText = "Editar";
-            document.getElementById('btnSubmit').innerText = "Guardar";
-            document.getElementById('btnSubmit').className = "btn btn-warning w-100 text-white";
-            document.getElementById('btnCancelar').style.display='block';
+            document.getElementById('formTitle').innerText = "Editando: " + p.titulo;
+            document.getElementById('btnSubmit').innerText = "Guardar Cambios";
+            document.getElementById('btnSubmit').className = "btn btn-warning w-100 text-white fw-bold";
+            document.getElementById('btnCancelar').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Sube la pantalla al formulario
         }
 
         function cancelarEdicion() {
             document.getElementById('propiedadForm').reset();
             document.getElementById('editId').value='';
             document.getElementById('formTitle').innerText="Nueva Propiedad";
-            document.getElementById('btnSubmit').innerText="Publicar";
-            document.getElementById('btnSubmit').className="btn btn-success w-100";
+            document.getElementById('btnSubmit').innerText="Publicar Propiedad";
+            document.getElementById('btnSubmit').className="btn btn-success w-100 fw-bold";
             document.getElementById('btnCancelar').style.display='none';
         }
 
         async function eliminar(id) {
-            if(confirm("¿Borrar?")) {
+            if(confirm("¿Estás seguro de que deseas eliminar esta propiedad de forma permanente?")) {
                 await fetch(`${API_URL}/propiedades/${id}`, {method:'DELETE', headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}});
                 cargarPropiedades();
             }

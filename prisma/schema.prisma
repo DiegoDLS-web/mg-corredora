@@ -20,6 +20,8 @@ model Propiedad {
   descripcion String?  // <--- NUEVO CAMPO AGREGADO
   corredora   String   @default("MGPropiedades")
   createdAt   DateTime @default(now())
+  estacionamientos Int? @default(0)
+  metros           Int? @default(0)
 }
 
 model Usuario {
