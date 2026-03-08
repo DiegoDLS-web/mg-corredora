@@ -23,8 +23,13 @@
             align-items: center; gap: 8px; backdrop-filter: blur(4px);
         }
 
-        /* DISEÑO DE LOS CUADROS DE CARACTERÍSTICAS */
         .input-group-text { width: 40px; justify-content: center; }
+        
+        /* MINI PREVIEW DE FOTOS */
+        .img-mini-preview {
+            width: 38px; height: 38px; object-fit: cover; border-radius: 6px;
+            border: 1px solid #dee2e6; display: none; margin-left: 8px;
+        }
     </style>
 </head>
 <body>
@@ -90,7 +95,7 @@
                             </div>
                             <div class="mb-2"><input type="text" id="precio" class="form-control" placeholder="Precio (Ej: $45.000.000 o UF 2.500)" required onkeyup="formatoPesos(this)"></div>
                             <div class="mb-2"><input type="text" id="ubicacion" class="form-control" placeholder="Ubicación" required></div>
-                            <div class="mb-2"><textarea id="descripcion" class="form-control" placeholder="Descripción de la propiedad..."></textarea></div>
+                            <div class="mb-2"><textarea id="descripcion" class="form-control" placeholder="Descripción de la propiedad..." rows="3"></textarea></div>
                             
                             <label class="small fw-bold text-muted mb-1 mt-2">Características Principales</label>
                             <div class="row g-2 mb-3">
@@ -120,7 +125,17 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3"><textarea id="imagen" class="form-control" placeholder="URLs de imágenes (separadas por una coma o espacio)..." required></textarea></div>
+                            <div class="mb-4">
+                                <label class="small fw-bold text-muted mb-2 d-flex justify-content-between align-items-center">
+                                    Fotos de la Propiedad (URLs)
+                                </label>
+                                <div id="contenedor-urls">
+                                    </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm w-100 fw-bold mt-2" onclick="agregarFilaUrl()">
+                                    <i class="bi bi-plus-circle"></i> Agregar otra foto
+                                </button>
+                            </div>
+
                             <div class="d-flex gap-2">
                                 <button type="submit" id="btnSubmit" class="btn btn-success w-100 fw-bold">Publicar Propiedad</button>
                                 <button type="button" id="btnCancelar" onclick="cancelarEdicion()" class="btn btn-secondary" style="display:none;">Cancelar</button>
@@ -161,6 +176,40 @@
         const API_URL = '/api';
         let propiedades = [];
 
+        // --- SISTEMA DINÁMICO DE URLs ---
+        function agregarFilaUrl(valor = '') {
+            const container = document.getElementById('contenedor-urls');
+            const numHijos = container.children.length;
+            
+            const div = document.createElement('div');
+            div.className = 'd-flex mb-2 url-group align-items-center shadow-sm rounded';
+            div.innerHTML = `
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light text-primary"><i class="bi bi-image"></i></span>
+                    <input type="url" class="form-control input-url-foto" placeholder="Pega el link de la foto aquí..." value="${valor}" oninput="actualizarPreview(this)" required>
+                    ${numHijos > 0 ? `<button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()" title="Borrar fila"><i class="bi bi-trash"></i></button>` : ''}
+                </div>
+                <img src="${valor}" class="img-mini-preview" style="${valor ? 'display:block;' : 'display:none;'}">
+            `;
+            container.appendChild(div);
+        }
+
+        function actualizarPreview(input) {
+            const img = input.parentElement.parentElement.querySelector('.img-mini-preview');
+            if (input.value && input.value.startsWith('http')) {
+                img.src = input.value;
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
+        }
+
+        function obtenerStringDeUrls() {
+            const inputs = document.querySelectorAll('.input-url-foto');
+            const urlsVaciasLimpias = Array.from(inputs).map(input => input.value.trim()).filter(val => val !== '');
+            return urlsVaciasLimpias.join(',');
+        }
+
         // VALIDAR SESIÓN AL CARGAR
         document.addEventListener('DOMContentLoaded', () => {
             const t = localStorage.getItem('token');
@@ -169,7 +218,6 @@
             if(t && r === 'corredor') window.location.href = '/panel-corredor';
         });
 
-        // LOGIN
         async function handleLogin(e, source) {
             e.preventDefault();
             const email = document.getElementById(source==='admin'?'emailAdmin':'emailCorredor').value;
@@ -205,13 +253,17 @@
             document.getElementById('loginSection').style.display='none';
             document.getElementById('dashboardSection').style.display='block';
             document.getElementById('badgeVisitas').style.display='flex'; 
+            
+            // Iniciar con un campo de URL vacío
+            document.getElementById('contenedor-urls').innerHTML = '';
+            agregarFilaUrl();
+
             cargarPropiedades();
             cargarVisitas(); 
         }
         
         function cerrarSesion() { localStorage.clear(); location.reload(); }
 
-        // --- CARGAR VISITAS ---
         async function cargarVisitas() {
             try {
                 const res = await fetch(`${API_URL}/visitas`);
@@ -222,7 +274,6 @@
             } catch(e) { console.error("Error cargando visitas"); }
         }
 
-        // CARGAR PROPIEDADES
         async function cargarPropiedades() {
             const res = await fetch(`${API_URL}/propiedades`);
             propiedades = (await res.json()).reverse();
@@ -251,11 +302,18 @@
             });
         }
 
-        // GUARDAR PROPIEDAD
         document.getElementById('propiedadForm').addEventListener('submit', async(e)=>{
             e.preventDefault();
             const token = localStorage.getItem('token');
             const id = document.getElementById('editId').value;
+            
+            // Recoger todas las URLs en un solo string separado por comas
+            const urlsFinales = obtenerStringDeUrls();
+            if(!urlsFinales) {
+                alert("Debes agregar al menos una foto.");
+                return;
+            }
+
             const data = {
                 titulo: document.getElementById('titulo').value,
                 operacion: document.getElementById('operacion').value,
@@ -267,7 +325,7 @@
                 banos: parseInt(document.getElementById('banos').value)||0,
                 estacionamientos: parseInt(document.getElementById('estacionamientos').value)||0,
                 metros: parseInt(document.getElementById('metros').value)||0,
-                imagen: document.getElementById('imagen').value.replace(/\n/g,','),
+                imagen: urlsFinales, // Se envía exactamente como el backend lo espera
                 corredora: "MGPropiedades"
             };
             
@@ -282,12 +340,9 @@
                 alert(id ? "Propiedad Actualizada" : "Propiedad Creada Exitosamente"); 
                 cancelarEdicion(); 
                 cargarPropiedades(); 
-            } else {
-                alert("Error al guardar. Asegúrate de haber actualizado el schema.prisma");
             }
         });
 
-        // CREAR CORREDOR
         document.getElementById('formCrearCorredor').addEventListener('submit', async(e)=>{
             e.preventDefault();
             const token = localStorage.getItem('token');
@@ -315,18 +370,35 @@
             document.getElementById('banos').value = p.banos || '';
             document.getElementById('estacionamientos').value = p.estacionamientos || '';
             document.getElementById('metros').value = p.metros || '';
-            document.getElementById('imagen').value = p.imagen;
+            
+            // Reconstruir los inputs de imágenes
+            const contenedorUrls = document.getElementById('contenedor-urls');
+            contenedorUrls.innerHTML = '';
+            const fotos = p.imagen ? p.imagen.split(/[,\s\n]+/) : [];
+            
+            if(fotos.length === 0) {
+                agregarFilaUrl(); // Poner al menos uno vacío si no hay fotos
+            } else {
+                fotos.forEach(foto => {
+                    if(foto.trim() !== '') agregarFilaUrl(foto.trim());
+                });
+            }
             
             document.getElementById('formTitle').innerText = "Editando: " + p.titulo;
             document.getElementById('btnSubmit').innerText = "Guardar Cambios";
             document.getElementById('btnSubmit').className = "btn btn-warning w-100 text-white fw-bold";
             document.getElementById('btnCancelar').style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Sube la pantalla al formulario
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
         }
 
         function cancelarEdicion() {
             document.getElementById('propiedadForm').reset();
             document.getElementById('editId').value='';
+            
+            // Limpiar URLs y dejar solo uno
+            document.getElementById('contenedor-urls').innerHTML = '';
+            agregarFilaUrl();
+
             document.getElementById('formTitle').innerText="Nueva Propiedad";
             document.getElementById('btnSubmit').innerText="Publicar Propiedad";
             document.getElementById('btnSubmit').className="btn btn-success w-100 fw-bold";
