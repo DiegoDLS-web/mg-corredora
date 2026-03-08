@@ -13,6 +13,25 @@
         .dashboard-container { display: none; }
         .admin-img-preview { height: 150px; object-fit: cover; width: 100%; }
         .nav-pills .nav-link.active { background-color: var(--bs-primary); }
+        
+        /* ESTILOS DEL CONTADOR DISCRETO */
+        .contador-flotante {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(33, 37, 41, 0.85); /* Gris oscuro semitransparente */
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1050;
+            display: none; /* Oculto hasta que se inicie sesión */
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+        }
     </style>
 </head>
 <body>
@@ -99,6 +118,10 @@
         </div>
     </div>
 
+    <div id="badgeVisitas" class="contador-flotante">
+        <i class="bi bi-bar-chart-fill text-info"></i> Visitas Web: <span id="numeroVisitas">0</span>
+    </div>
+
     <div class="modal fade" id="modalCorredor" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -164,10 +187,25 @@
         function mostrarDashboard() {
             document.getElementById('loginSection').style.display='none';
             document.getElementById('dashboardSection').style.display='block';
+            document.getElementById('badgeVisitas').style.display='flex'; // Muestra el contador
             cargarPropiedades();
+            cargarVisitas(); // Llama al servidor para obtener las visitas
         }
         
         function cerrarSesion() { localStorage.clear(); location.reload(); }
+
+        // --- CARGAR VISITAS ---
+        async function cargarVisitas() {
+            try {
+                const res = await fetch(`${API_URL}/visitas`);
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('numeroVisitas').innerText = data.visitas;
+                }
+            } catch(e) { 
+                console.error("Error cargando visitas"); 
+            }
+        }
 
         // CARGAR PROPIEDADES (ADMIN VE TODO)
         async function cargarPropiedades() {

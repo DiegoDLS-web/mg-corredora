@@ -14,6 +14,22 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
+// --- CONTADOR DE VISITAS ---
+let contadorVisitas = 0;
+
+// Este middleware cuenta cada vez que alguien entra a tu página de inicio pública
+app.use((req, res, next) => {
+    if (req.path === '/' || req.path === '/index.html') {
+        contadorVisitas++;
+    }
+    next();
+});
+
+// Ruta que le envía el total al panel de administrador
+app.get('/api/visitas', (req, res) => {
+    res.json({ visitas: contadorVisitas });
+});
+
 // --- RUTAS DE VISTAS ---
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
