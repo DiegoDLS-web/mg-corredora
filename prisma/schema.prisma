@@ -31,3 +31,9 @@ model Usuario {
   nombre   String? // <--- Nuevo
   rol      String  @default("corredor") // <--- Nuevo (admin o corredor)
 }
+
+model Visita {
+  id        Int      @id @default(autoincrement())
+  ip        String   @unique
+  createdAt DateTime @default(now())
+}

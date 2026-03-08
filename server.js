@@ -16,19 +16,29 @@ app.use(express.json());
 // --- CONFIGURACIÓN PARA OBTENER IP REAL (Cloudflare/Railway) ---
 app.set('trust proxy', true);
 
-// --- CONTADOR DE VISITAS ÚNICAS POR IP ---
-// Usamos un 'Set' porque matemáticamente no permite valores duplicados.
-// Si una IP que ya existe intenta guardarse de nuevo, el Set la ignora.
-const ipsVisitantes = new Set(); 
-
-app.use((req, res, next) => {
-    // Solo contamos cuando visitan la portada de tu web
+// --- CONTADOR DE VISITAS INMORTAL (BASE DE DATOS) ---
+app.use(async (req, res, next) => {
     if (req.path === '/' || req.path === '/index.html') {
-        // Esta línea busca la IP real que envía Cloudflare, o la directa si no hay Cloudflare
-        const ipUsuario = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip;
         
+        // 1. Capturamos la IP
+        let ipUsuario = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip;
+        
+        // 2. Limpiamos la IP si vienen varias juntas
+        if (typeof ipUsuario === 'string' && ipUsuario.includes(',')) {
+            ipUsuario = ipUsuario.split(',')[0].trim();
+        }
+        
+        // 3. Guardamos en la Base de Datos
         if (ipUsuario) {
-            ipsVisitantes.add(ipUsuario);
+            try {
+                await prisma.visita.upsert({
+                    where: { ip: ipUsuario },
+                    update: {},
+                    create: { ip: ipUsuario }
+                });
+            } catch (error) {
+                // Si la BD tarda un milisegundo de más, ignoramos el error para que la web cargue rápido
+            }
         }
     }
     next();
@@ -38,9 +48,13 @@ app.use((req, res, next) => {
 app.use(express.static('public'));
 
 // --- RUTA DEL CONTADOR PARA EL PANEL ADMIN ---
-// En lugar de enviar una variable suelta, enviamos el 'tamaño' (.size) de nuestra lista de IPs únicas.
-app.get('/api/visitas', (req, res) => {
-    res.json({ visitas: ipsVisitantes.size });
+app.get('/api/visitas', async (req, res) => {
+    try {
+        const totalVisitas = await prisma.visita.count();
+        res.json({ visitas: totalVisitas });
+    } catch (error) {
+        res.json({ visitas: 0 });
+    }
 });
 
 // --- RUTAS DE VISTAS ---
