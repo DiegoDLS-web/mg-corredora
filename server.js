@@ -13,21 +13,34 @@ const SECRET_KEY = "mi_secreto_super_seguro";
 app.use(cors());
 app.use(express.json());
 
-// --- CONTADOR DE VISITAS (Debe ir ANTES de cargar la página) ---
-let contadorVisitas = 0;
+// --- CONFIGURACIÓN PARA OBTENER IP REAL (Cloudflare/Railway) ---
+app.set('trust proxy', true);
+
+// --- CONTADOR DE VISITAS ÚNICAS POR IP ---
+// Usamos un 'Set' porque matemáticamente no permite valores duplicados.
+// Si una IP que ya existe intenta guardarse de nuevo, el Set la ignora.
+const ipsVisitantes = new Set(); 
+
 app.use((req, res, next) => {
+    // Solo contamos cuando visitan la portada de tu web
     if (req.path === '/' || req.path === '/index.html') {
-        contadorVisitas++;
+        // Esta línea busca la IP real que envía Cloudflare, o la directa si no hay Cloudflare
+        const ipUsuario = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip;
+        
+        if (ipUsuario) {
+            ipsVisitantes.add(ipUsuario);
+        }
     }
     next();
 });
 
-// AHORA SÍ, cargamos la carpeta pública
+// AHORA SÍ, cargamos la carpeta pública con la página web
 app.use(express.static('public'));
 
-// Ruta que le envía el total al panel de administrador
+// --- RUTA DEL CONTADOR PARA EL PANEL ADMIN ---
+// En lugar de enviar una variable suelta, enviamos el 'tamaño' (.size) de nuestra lista de IPs únicas.
 app.get('/api/visitas', (req, res) => {
-    res.json({ visitas: contadorVisitas });
+    res.json({ visitas: ipsVisitantes.size });
 });
 
 // --- RUTAS DE VISTAS ---
