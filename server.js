@@ -12,18 +12,18 @@ const SECRET_KEY = "mi_secreto_super_seguro";
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
 
-// --- CONTADOR DE VISITAS ---
+// --- CONTADOR DE VISITAS (Debe ir ANTES de cargar la página) ---
 let contadorVisitas = 0;
-
-// Este middleware cuenta cada vez que alguien entra a tu página de inicio pública
 app.use((req, res, next) => {
     if (req.path === '/' || req.path === '/index.html') {
         contadorVisitas++;
     }
     next();
 });
+
+// AHORA SÍ, cargamos la carpeta pública
+app.use(express.static('public'));
 
 // Ruta que le envía el total al panel de administrador
 app.get('/api/visitas', (req, res) => {
