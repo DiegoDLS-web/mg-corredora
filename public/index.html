@@ -12,6 +12,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
+        /* --- PRELOADER RELÁMPAGO --- */
+        .preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .preloader img {
+            height: 120px; 
+            animation: latido 1s infinite alternate ease-in-out;
+        }
+        @keyframes latido {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
+
         /* --- ESTILOS GENERALES --- */
         :root {
             --color-primario: #003366; 
@@ -23,6 +43,8 @@
             font-family: 'Montserrat', sans-serif; 
             background-color: var(--color-fondo); 
             color: var(--color-secundario);
+            /* Evita el scroll mientras carga el preloader */
+            overflow-x: hidden;
         }
         
         /* NAVBAR Y BOTONES REORDENADOS */
@@ -144,6 +166,10 @@
     </style>
 </head>
 <body>
+
+    <div id="preloader" class="preloader">
+        <img src="logoweb4.png" alt="Cargando MG Propiedades">
+    </div>
 
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
@@ -454,6 +480,17 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // --- LÓGICA DEL PRELOADER ---
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            // Le damos una transición suave de desvanecimiento
+            preloader.style.opacity = '0';
+            preloader.style.visibility = 'hidden';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500); // 500ms coincide con la transición en CSS
+        });
+
         const TELEFONO_EMPRESA = "56975575540";
         const API_URL = '/api'; 
 
