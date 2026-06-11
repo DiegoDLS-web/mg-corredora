@@ -21,7 +21,7 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
         }
         .preloader img {
             height: 120px; 
@@ -187,20 +187,29 @@
             filter: blur(4px) brightness(0.6) !important; 
         }
 
-        /* --- ESTILOS PARA SECCIÓN INVERSIONES FORESTALES --- */
-        .flyer-img {
-            width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-            transition: transform 0.3s ease;
+        /* --- NUEVOS ESTILOS PARA LA SECCIÓN DE BOSQUES Y PARCELAS CON FONDO REAL --- */
+        #inversiones {
+            /* Imagen de un bosque hermoso en alta definición como fondo principal de la sección */
+            background: linear-gradient(rgba(10, 25, 47, 0.8), rgba(10, 25, 47, 0.8)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+            background-attachment: fixed; /* Genera un sutil efecto parallax premium al bajar */
         }
-        .flyer-img:hover {
-            transform: scale(1.02);
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 35px 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
         }
-        .btn-inversion {
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .icon-feature {
+            font-size: 1.25rem;
+            color: #ffc107; /* Color dorado para las viñetas del flyer */
         }
     </style>
 </head>
@@ -290,40 +299,74 @@
         </div>
     </header>
 
-    <!-- SECCIÓN DE INVERSIÓN FORESTAL Y PARCELAS (AHORA ARRIBA DE PROPIEDADES) -->
-    <section id="inversiones" class="py-5 bg-dark text-white">
+    <section id="inversiones" class="py-5 text-white">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="text-uppercase fw-bold text-white mb-3 position-relative d-inline-block" style="letter-spacing: 2px;">
+                <h2 class="text-uppercase fw-bold text-white mb-3" style="letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
                     Inversión Forestal y Parcelas
-                    <div style="width: 60px; height: 3px; background-color: var(--color-primario); margin: 15px auto 0;"></div>
                 </h2>
-                <p class="text-secondary fs-5">Especialistas en la <strong class="text-white">compra y venta</strong> de parcelas de agrado y predios forestales a nivel nacional.</p>
+                <div style="width: 60px; height: 3px; background-color: #ffc107; margin: 15px auto 0; box-shadow: 1px 1px 3px rgba(0,0,0,0.5);"></div>
+                <p class="text-light mt-3 fs-5 opacity-75" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">Gestión integral para la <strong class="text-warning">compra y venta</strong> de terrenos rurales en todo el país.</p>
             </div>
             
-            <div class="row align-items-center justify-content-center g-5 mt-2">
-                <!-- Columna Parcelas -->
-                <div class="col-md-6 col-lg-5 text-center">
-                    <h4 class="fw-bold mb-3 text-warning">Compra y Venta de Parcelas</h4>
-                    <img src="URL_DEL_FLYER_DE_PARCELAS_AQUI" alt="Compra y Venta de Parcelas en Chile" class="flyer-img mb-4">
-                    <a href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20necesito%20información%20sobre%20compra/venta%20de%20parcelas." target="_blank" class="btn btn-success btn-lg w-100 rounded-pill text-uppercase fw-bold btn-inversion">
-                        <i class="bi bi-whatsapp"></i> Consultar por Parcelas
-                    </a>
-                </div>
+            <div class="row g-4 justify-content-center">
                 
-                <!-- Columna Bosques -->
-                <div class="col-md-6 col-lg-5 text-center">
-                    <h4 class="fw-bold mb-3 text-warning">Compra y Venta de Bosques</h4>
-                    <img src="URL_DEL_FLYER_DE_BOSQUES_AQUI" alt="Compra y Venta de Bosques y Predios" class="flyer-img mb-4">
-                    <a href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20necesito%20información%20sobre%20compra/venta%20de%20bosques%20o%20predios." target="_blank" class="btn btn-warning btn-lg w-100 rounded-pill text-uppercase fw-bold btn-inversion">
-                        <i class="bi bi-whatsapp text-dark"></i> Consultar por Bosques
-                    </a>
+                <div class="col-md-6 col-lg-5">
+                    <div class="glass-card text-center d-flex flex-column h-100 justify-content-between">
+                        <div>
+                            <div class="mb-2 text-warning fw-bold text-uppercase small" style="letter-spacing: 2px;">Área Corretaje Rural</div>
+                            <h3 class="fw-bold mb-1 text-white text-uppercase" style="font-weight: 800;">Compra y Venta</h3>
+                            <h2 class="text-warning fw-bold mb-4" style="font-weight: 800; font-size: 2.3rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">PARCELAS</h2>
+                            
+                            <div class="badge bg-dark bg-opacity-50 fs-5 px-4 py-2 border border-secondary border-opacity-50 rounded mb-4 fw-bold">
+                                5.000 MTR² <span class="text-warning">|</span> EN TODO CHILE
+                            </div>
+                            
+                            <ul class="text-start list-unstyled mx-auto mb-4" style="max-width: 290px; font-size: 1.05rem;">
+                                <li class="mb-3 d-flex align-items-center"><i class="bi bi-tree-fill icon-feature me-3"></i> Entorno Natural Protegido</li>
+                                <li class="mb-3 d-flex align-items-center"><i class="bi bi-compass-fill icon-feature me-3"></i> Vista Privilegiada</li>
+                                <li class="mb-3 d-flex align-items-center"><i class="bi bi-signpost-turn-fill icon-feature me-3"></i> Acceso Expedito a Rutas</li>
+                                <li class="mb-3 d-flex align-items-center"><i class="bi bi-droplet-fill icon-feature me-3"></i> Factibilidad Luz y Agua</li>
+                            </ul>
+                            <p class="fst-italic small opacity-75 mb-4 mt-2">"Tu espacio, tu tranquilidad"</p>
+                        </div>
+                        <a href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20necesito%20asesoría%20para%20la%20compra/venta%20de%20una%20parcela." target="_blank" class="btn btn-warning btn-lg w-100 rounded-pill text-uppercase fw-bold text-dark btn-inversion py-3">
+                            <i class="bi bi-whatsapp"></i> Gestionar mi Parcela
+                        </a>
+                    </div>
                 </div>
+
+                <div class="col-md-6 col-lg-5">
+                    <div class="glass-card text-center d-flex flex-column h-100 justify-content-between">
+                        <div>
+                            <div class="mb-2 text-success fw-bold text-uppercase small" style="letter-spacing: 2px; color: #25D366 !important;">Área Gestión Forestal</div>
+                            <h3 class="fw-bold mb-1 text-white text-uppercase" style="font-weight: 800;">Compra y Venta</h3>
+                            <h2 class="fw-bold mb-4" style="font-weight: 800; font-size: 2.3rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); color: #25D366;">BOSQUES</h2>
+                            
+                            <div class="d-flex justify-content-center gap-2 mb-4 text-uppercase small fw-bold">
+                                <span class="badge bg-secondary bg-opacity-20 px-3 py-2 border border-secondary border-opacity-20">Pino</span>
+                                <span class="badge bg-secondary bg-opacity-20 px-3 py-2 border border-secondary border-opacity-20">Eucalipto</span>
+                                <span class="badge bg-secondary bg-opacity-20 px-3 py-2 border border-secondary border-opacity-20">Nativo</span>
+                            </div>
+                            
+                            <ul class="text-start list-unstyled mx-auto mb-4" style="max-width: 290px; font-size: 1.05rem;">
+                                <li class="mb-3 d-flex align-items-center"><i class="bi bi-fullscreen icon-feature me-3" style="color: #25D366;"></i> Sobre 30 Hectáreas</li>
+                                <li class="mb-3 d-flex align-items-center"><i class="bi bi-cash-coin icon-feature me-3" style="color: #25D366;"></i> Operación con Pago Contado</li>
+                                <li class="bi mb-3 d-flex align-items-center"><i class="bi bi-layers-half icon-feature me-3" style="color: #25D366;"></i> Compra por Metro Ruma</li>
+                                <li class="mb-3 d-flex align-items-center"><i class="bi bi-shield-fill-check icon-feature me-3" style="color: #25D366;"></i> Retorno e Inversión Segura</li>
+                            </ul>
+                            <p class="fst-italic small opacity-75 mb-4 mt-2">"Profesionalismo en el mercado maderero"</p>
+                        </div>
+                        <a href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20necesito%20información%20para%20la%20compra/venta%20de%20bosques%20o%20predios." target="_blank" class="btn btn-success btn-lg w-100 rounded-pill text-uppercase fw-bold text-white btn-inversion py-3" style="background-color: #25D366; border: none;">
+                            <i class="bi bi-whatsapp"></i> Gestionar mi Bosque
+                        </a>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <!-- SECCIÓN DE PROPIEDADES PÚBLICAS -->
     <section id="propiedades" style="background-color: #f4f4f4;">
         <div class="container">
             <div class="text-center mb-5">
@@ -352,7 +395,7 @@
                     <hr class="my-4">
 
                     <h5 class="fw-bold" style="color: var(--color-primario);">Nuestra Propuesta de Valor</h5>
-                    <p class="text-muted">Entregamos una asesoría completa e integral, acompañando a nuestros clientes desde la primera consulta hasta el cierre exitoso de cada operación. Nuestro objetivo es que cada proceso sea claro, seguro y eficiente.</p>
+                    <p class="text-muted">Entregamos una asesoría completa e integral, acompañando a nuestros clientes desde la primera consulta hasta el cierre exitoso de cada operation. Nuestro objetivo es que cada proceso sea claro, seguro y eficiente.</p>
 
                     <h5 class="fw-bold mt-4" style="color: var(--color-primario);">Nuestros Servicios</h5>
                     <ul class="list-unstyled lista-servicios text-muted">
@@ -549,17 +592,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        window.addEventListener('load', () => {
-            const preloader = document.getElementById('preloader');
-            setTimeout(() => {
-                preloader.style.opacity = '0';
-                preloader.style.visibility = 'hidden';
-                setTimeout(() => {
-                    preloader.style.display = 'none';
-                }, 500); 
-            }, 1500); 
-        });
-
         const TELEFONO_EMPRESA = "56975575540";
         const API_URL = '/api'; 
 
