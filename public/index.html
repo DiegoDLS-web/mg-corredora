@@ -21,7 +21,8 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            /* Aquí está tu modificación a 0.4s */
+            transition: opacity 0.4s ease, visibility 0.4s ease;
         }
         .preloader img {
             height: 120px; 
@@ -187,11 +188,10 @@
             filter: blur(4px) brightness(0.6) !important; 
         }
 
-        /* --- NUEVOS ESTILOS PARA LA SECCIÓN DE BOSQUES Y PARCELAS CON FONDO REAL --- */
+        /* --- NUEVOS ESTILOS PARA LA SECCIÓN DE BOSQUES Y PARCELAS --- */
         #inversiones {
-            /* Imagen de un bosque hermoso en alta definición como fondo principal de la sección */
             background: linear-gradient(rgba(10, 25, 47, 0.8), rgba(10, 25, 47, 0.8)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
-            background-attachment: fixed; /* Genera un sutil efecto parallax premium al bajar */
+            background-attachment: fixed; 
         }
         .glass-card {
             background: rgba(255, 255, 255, 0.08);
@@ -209,7 +209,7 @@
         }
         .icon-feature {
             font-size: 1.25rem;
-            color: #ffc107; /* Color dorado para las viñetas del flyer */
+            color: #ffc107; 
         }
     </style>
 </head>
@@ -395,7 +395,7 @@
                     <hr class="my-4">
 
                     <h5 class="fw-bold" style="color: var(--color-primario);">Nuestra Propuesta de Valor</h5>
-                    <p class="text-muted">Entregamos una asesoría completa e integral, acompañando a nuestros clientes desde la primera consulta hasta el cierre exitoso de cada operation. Nuestro objetivo es que cada proceso sea claro, seguro y eficiente.</p>
+                    <p class="text-muted">Entregamos una asesoría completa e integral, acompañando a nuestros clientes desde la primera consulta hasta el cierre exitoso de cada operación. Nuestro objetivo es que cada proceso sea claro, seguro y eficiente.</p>
 
                     <h5 class="fw-bold mt-4" style="color: var(--color-primario);">Nuestros Servicios</h5>
                     <ul class="list-unstyled lista-servicios text-muted">
@@ -592,6 +592,25 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // --- LÓGICA DEL PRELOADER CON SEGURO ANTI-CUELGUES ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const preloader = document.getElementById('preloader');
+            
+            // Lo mostramos por 1.2 segundos y luego lo desvanecemos
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                preloader.style.visibility = 'hidden';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 400); // Tus 0.4s de transición
+            }, 1200);
+            
+            // Seguro de vida: Si por cualquier falla del navegador no se oculta, lo forzamos a desaparecer a los 3 segundos máximo.
+            setTimeout(() => {
+                if (preloader) preloader.style.display = 'none';
+            }, 3000);
+        });
+
         const TELEFONO_EMPRESA = "56975575540";
         const API_URL = '/api'; 
 
