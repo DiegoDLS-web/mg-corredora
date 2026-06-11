@@ -198,7 +198,7 @@
             transform: scale(1.02);
         }
         .btn-inversion {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
@@ -221,13 +221,13 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center gap-2">
                     <li class="nav-item"><a class="nav-link active" href="#">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#inversiones">Parcelas y Bosques</a></li> 
                     <li class="nav-item"><a class="nav-link" href="#propiedades">Propiedades</a></li>
                     <li class="nav-item"><a class="nav-link" href="#nosotros">Nosotros</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#inversiones">Parcelas / Bosques</a></li> 
                     
                     <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
-                        <a class="btn text-white fw-bold px-4 rounded-pill shadow-sm" style="background-color: var(--color-primario);" href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20quiero%20vender%20mi%20casa%20con%20ustedes" target="_blank">
+                        <a class="btn text-white fw-bold px-4 rounded-pill shadow-sm" style="background-color: var(--color-primario);" href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20quiero%20vender%20mi%20propiedad" target="_blank">
                             ¿Vendes tu propiedad?
                         </a>
                     </li>
@@ -290,6 +290,40 @@
         </div>
     </header>
 
+    <!-- SECCIÓN DE INVERSIÓN FORESTAL Y PARCELAS (AHORA ARRIBA DE PROPIEDADES) -->
+    <section id="inversiones" class="py-5 bg-dark text-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="text-uppercase fw-bold text-white mb-3 position-relative d-inline-block" style="letter-spacing: 2px;">
+                    Inversión Forestal y Parcelas
+                    <div style="width: 60px; height: 3px; background-color: var(--color-primario); margin: 15px auto 0;"></div>
+                </h2>
+                <p class="text-secondary fs-5">Especialistas en la <strong class="text-white">compra y venta</strong> de parcelas de agrado y predios forestales a nivel nacional.</p>
+            </div>
+            
+            <div class="row align-items-center justify-content-center g-5 mt-2">
+                <!-- Columna Parcelas -->
+                <div class="col-md-6 col-lg-5 text-center">
+                    <h4 class="fw-bold mb-3 text-warning">Compra y Venta de Parcelas</h4>
+                    <img src="URL_DEL_FLYER_DE_PARCELAS_AQUI" alt="Compra y Venta de Parcelas en Chile" class="flyer-img mb-4">
+                    <a href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20necesito%20información%20sobre%20compra/venta%20de%20parcelas." target="_blank" class="btn btn-success btn-lg w-100 rounded-pill text-uppercase fw-bold btn-inversion">
+                        <i class="bi bi-whatsapp"></i> Consultar por Parcelas
+                    </a>
+                </div>
+                
+                <!-- Columna Bosques -->
+                <div class="col-md-6 col-lg-5 text-center">
+                    <h4 class="fw-bold mb-3 text-warning">Compra y Venta de Bosques</h4>
+                    <img src="URL_DEL_FLYER_DE_BOSQUES_AQUI" alt="Compra y Venta de Bosques y Predios" class="flyer-img mb-4">
+                    <a href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20necesito%20información%20sobre%20compra/venta%20de%20bosques%20o%20predios." target="_blank" class="btn btn-warning btn-lg w-100 rounded-pill text-uppercase fw-bold btn-inversion">
+                        <i class="bi bi-whatsapp text-dark"></i> Consultar por Bosques
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE PROPIEDADES PÚBLICAS -->
     <section id="propiedades" style="background-color: #f4f4f4;">
         <div class="container">
             <div class="text-center mb-5">
@@ -302,34 +336,6 @@
             
             <div class="row g-4" id="contenedor-propiedades">
                 </div>
-        </div>
-    </section>
-
-    <section id="inversiones" class="py-5 bg-dark text-white">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="text-uppercase fw-bold text-white mb-3 position-relative d-inline-block" style="letter-spacing: 2px;">
-                    Inversión Forestal y Parcelas
-                    <div style="width: 60px; height: 3px; background-color: var(--color-primario); margin: 15px auto 0;"></div>
-                </h2>
-                <p class="text-secondary fs-5">Descubre oportunidades exclusivas de inversión en todo el territorio nacional.</p>
-            </div>
-            
-            <div class="row align-items-center justify-content-center g-5 mt-2">
-                <div class="col-md-6 col-lg-5 text-center">
-                    <img src="URL_DEL_FLYER_DE_PARCELAS_AQUI" alt="Venta de Parcelas en Chile" class="flyer-img mb-4">
-                    <a href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20me%20interesa%20comprar%20una%20parcela." target="_blank" class="btn btn-success btn-lg w-100 rounded-pill text-uppercase fw-bold btn-inversion">
-                        <i class="bi bi-whatsapp"></i> Comprar Parcela
-                    </a>
-                </div>
-                
-                <div class="col-md-6 col-lg-5 text-center">
-                    <img src="URL_DEL_FLYER_DE_BOSQUES_AQUI" alt="Compra de Bosques al contado" class="flyer-img mb-4">
-                    <a href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20tengo%20un%20bosque%20para%20vender." target="_blank" class="btn btn-warning btn-lg w-100 rounded-pill text-uppercase fw-bold btn-inversion">
-                        <i class="bi bi-whatsapp text-dark"></i> Vender mi Bosque
-                    </a>
-                </div>
-            </div>
         </div>
     </section>
 
@@ -354,7 +360,7 @@
                         <li><i class="bi bi-check-circle-fill"></i> Venta de propiedades</li>
                         <li><i class="bi bi-check-circle-fill"></i> Arriendo de propiedades</li>
                         <li><i class="bi bi-check-circle-fill"></i> Compra y venta de parcelas de agrado</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Tasación y compra de predios forestales (venta por metro ruma)</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Compra y venta de predios forestales y bosques (por metro ruma)</li>
                         <li><i class="bi bi-check-circle-fill"></i> Asesoría legal, comercial y administrativa</li>
                         <li><i class="bi bi-check-circle-fill"></i> Apoyo en procesos bancarios y notariales</li>
                     </ul>
