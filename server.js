@@ -11,7 +11,9 @@ const PORT = process.env.PORT || 3000;
 const SECRET_KEY = "mi_secreto_super_seguro"; 
 
 app.use(cors());
-app.use(express.json());
+// Límite ampliado a 50mb para recibir múltiples fotos directamente desde el PC
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // --- CONFIGURACIÓN PARA OBTENER IP REAL (Cloudflare/Railway) ---
 app.set('trust proxy', true);
@@ -20,15 +22,12 @@ app.set('trust proxy', true);
 app.use(async (req, res, next) => {
     if (req.path === '/' || req.path === '/index.html') {
         
-        // 1. Capturamos la IP
         let ipUsuario = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip;
         
-        // 2. Limpiamos la IP si vienen varias juntas
         if (typeof ipUsuario === 'string' && ipUsuario.includes(',')) {
             ipUsuario = ipUsuario.split(',')[0].trim();
         }
         
-        // 3. Guardamos en la Base de Datos
         if (ipUsuario) {
             try {
                 await prisma.visita.upsert({
@@ -37,14 +36,13 @@ app.use(async (req, res, next) => {
                     create: { ip: ipUsuario }
                 });
             } catch (error) {
-                // Si la BD tarda un milisegundo de más, ignoramos el error para que la web cargue rápido
+                // Ignoramos error para priorizar velocidad de carga
             }
         }
     }
     next();
 });
 
-// AHORA SÍ, cargamos la carpeta pública con la página web
 app.use(express.static('public'));
 
 // --- RUTA DEL CONTADOR PARA EL PANEL ADMIN ---
@@ -66,7 +64,7 @@ app.get('/panel-corredor', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'panel-corredor.html'));
 });
 
-// --- API: LOGIN (CON AUTO-REPARACIÓN PARA TI) ---
+// --- API: LOGIN ---
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     
@@ -78,18 +76,15 @@ app.post('/api/login', async (req, res) => {
         const valid = await bcrypt.compare(password, usuario.password);
         if (!valid) return res.status(401).json({ error: "Credenciales incorrectas" });
 
-        // --- BLOQUE DE AUTO-REPARACIÓN PARA EL ADMIN ---
-        // Si es TU correo, forzamos que seas Admin sí o sí.
         if (email === 'admin@mgpropiedades.cl') {
             if (usuario.rol !== 'admin') {
                 await prisma.usuario.update({
                     where: { email },
                     data: { rol: 'admin', nombre: 'Administrador MG' }
                 });
-                usuario.rol = 'admin'; // Actualizamos en memoria
+                usuario.rol = 'admin';
             }
         }
-        // ------------------------------------------------
 
         const userRole = usuario.rol || 'corredor'; 
         const userName = usuario.nombre || 'Usuario';
@@ -119,7 +114,6 @@ app.get('/api/propiedades', async (req, res) => {
         const { corredor } = req.query; 
         let filtro = {};
         
-        // Si piden filtrar por corredor (para el panel de corredor)
         if (corredor && corredor !== 'null' && corredor !== 'undefined') {
             filtro = { corredora: { equals: corredor } };
         }
@@ -149,15 +143,12 @@ const verificarToken = (req, res, next) => {
 };
 
 // --- API: CREAR/EDITAR/BORRAR PROPIEDADES ---
-
 app.post('/api/propiedades', verificarToken, async (req, res) => {
     try {
         const datos = req.body;
-        // Si es corredor, forzamos su nombre como autor
         if (req.user.rol === 'corredor') {
             datos.corredora = req.user.nombre; 
         }
-        // Si es admin, usa el nombre que venga (o por defecto MG)
         const nueva = await prisma.propiedad.create({ data: datos });
         res.json(nueva);
     } catch (e) {
@@ -170,7 +161,6 @@ app.put('/api/propiedades/:id', verificarToken, async (req, res) => {
         const { id } = req.params;
         const datos = req.body;
         
-        // Seguridad para Corredor: Solo edita lo suyo
         if (req.user.rol === 'corredor') {
             const prop = await prisma.propiedad.findUnique({ where: { id: parseInt(id) } });
             if (!prop || prop.corredora !== req.user.nombre) {
@@ -190,7 +180,6 @@ app.put('/api/propiedades/:id', verificarToken, async (req, res) => {
 app.delete('/api/propiedades/:id', verificarToken, async (req, res) => {
     try {
         const { id } = req.params;
-        // Seguridad para Corredor: Solo borra lo suyo
         if (req.user.rol === 'corredor') {
             const prop = await prisma.propiedad.findUnique({ where: { id: parseInt(id) } });
             if (!prop || prop.corredora !== req.user.nombre) {

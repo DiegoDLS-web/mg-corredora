@@ -25,10 +25,72 @@
 
         .input-group-text { width: 40px; justify-content: center; }
         
-        /* MINI PREVIEW DE FOTOS */
-        .img-mini-preview {
-            width: 38px; height: 38px; object-fit: cover; border-radius: 6px;
-            border: 1px solid #dee2e6; display: none; margin-left: 8px;
+        /* ZONA DRAG & DROP PARA FOTOS */
+        .drop-zone {
+            border: 2px dashed #0d6efd;
+            border-radius: 12px;
+            padding: 25px 15px;
+            text-align: center;
+            background-color: #f8faff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            background-color: #e2edff;
+            border-color: #0043a8;
+            transform: scale(1.01);
+        }
+        .galeria-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .preview-card {
+            position: relative;
+            height: 75px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            border: 1px solid #dee2e6;
+        }
+        .preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .btn-quitar-foto {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn-quitar-foto:hover {
+            transform: scale(1.15);
+            background: #dc3545;
+        }
+        .badge-portada {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(13, 110, 253, 0.85);
+            color: white;
+            font-size: 0.65rem;
+            text-align: center;
+            font-weight: bold;
+            padding: 1px 0;
         }
     </style>
 </head>
@@ -90,10 +152,23 @@
                             <input type="hidden" id="editId">
                             <div class="mb-2"><input type="text" id="titulo" class="form-control" placeholder="Título" required></div>
                             <div class="row mb-2">
-                                <div class="col"><select id="operacion" class="form-select"><option>Venta</option><option>Arriendo</option></select></div>
-                                <div class="col"><select id="tipo" class="form-select"><option>Casa</option><option>Departamento</option><option>Terreno</option></select></div>
+                                <div class="col">
+                                    <select id="operacion" class="form-select">
+                                        <option value="Venta">Venta</option>
+                                        <option value="Arriendo">Arriendo</option>
+                                        <option value="Vendida">Vendida (Cinta Roja)</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select id="tipo" class="form-select">
+                                        <option value="Casa">Casa</option>
+                                        <option value="Departamento">Departamento</option>
+                                        <option value="Parcelas / Terrenos">Parcelas / Terrenos</option>
+                                        <option value="Bosques / Predios">Bosques / Predios</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="mb-2"><input type="text" id="precio" class="form-control" placeholder="Precio (Ej: $45.000.000 o UF 2.500)" required onkeyup="formatoPesos(this)"></div>
+                            <div class="mb-2"><input type="text" id="precio" class="form-control" placeholder="Precio (Ej: $45.000.000 o UF 2.500)" required onkeyup="formatoPrecioInteligente(this)"></div>
                             <div class="mb-2"><input type="text" id="ubicacion" class="form-control" placeholder="Ubicación" required></div>
                             <div class="mb-2"><textarea id="descripcion" class="form-control" placeholder="Descripción de la propiedad..." rows="3"></textarea></div>
                             
@@ -125,15 +200,25 @@
                                 </div>
                             </div>
 
+                            <!-- SISTEMA DRAG & DROP DE FOTOS -->
                             <div class="mb-4">
                                 <label class="small fw-bold text-muted mb-2 d-flex justify-content-between align-items-center">
-                                    Fotos de la Propiedad (URLs)
+                                    <span>Fotos de la Propiedad</span>
+                                    <span class="badge bg-secondary rounded-pill" id="contadorFotos">0 fotos</span>
                                 </label>
-                                <div id="contenedor-urls">
-                                    </div>
-                                <button type="button" class="btn btn-outline-primary btn-sm w-100 fw-bold mt-2" onclick="agregarFilaUrl()">
-                                    <i class="bi bi-plus-circle"></i> Agregar otra foto
-                                </button>
+                                
+                                <div id="dropZone" class="drop-zone" onclick="document.getElementById('fileInput').click()">
+                                    <i class="bi bi-cloud-arrow-up-fill fs-1 text-primary d-block mb-1"></i>
+                                    <span class="fw-bold text-dark d-block" style="font-size: 0.9rem;">Arrastra tus fotos aquí</span>
+                                    <small class="text-muted">o haz clic para elegir desde tu PC</small>
+                                    <input type="file" id="fileInput" multiple accept="image/*" style="display: none;" onchange="procesarArchivos(this.files)">
+                                </div>
+
+                                <div id="estadoCargaFotos" class="text-center text-primary small fw-bold mt-2" style="display: none;">
+                                    <div class="spinner-border spinner-border-sm me-1" role="status"></div> Optimizando fotos...
+                                </div>
+
+                                <div id="galeriaPreview" class="galeria-preview"></div>
                             </div>
 
                             <div class="d-flex gap-2">
@@ -175,39 +260,111 @@
     <script>
         const API_URL = '/api';
         let propiedades = [];
+        let fotosCargadas = [];
 
-        // --- SISTEMA DINÁMICO DE URLs ---
-        function agregarFilaUrl(valor = '') {
-            const container = document.getElementById('contenedor-urls');
-            const numHijos = container.children.length;
-            
-            const div = document.createElement('div');
-            div.className = 'd-flex mb-2 url-group align-items-center shadow-sm rounded';
-            div.innerHTML = `
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light text-primary"><i class="bi bi-image"></i></span>
-                    <input type="url" class="form-control input-url-foto" placeholder="Pega el link de la foto aquí..." value="${valor}" oninput="actualizarPreview(this)" required>
-                    ${numHijos > 0 ? `<button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()" title="Borrar fila"><i class="bi bi-trash"></i></button>` : ''}
-                </div>
-                <img src="${valor}" class="img-mini-preview" style="${valor ? 'display:block;' : 'display:none;'}">
-            `;
-            container.appendChild(div);
+        function separarFotos(str) {
+            if (!str) return [];
+            return str.split(/,(?=\s*(?:https?:|data:))|[\n]+/).map(s => s.trim()).filter(Boolean);
         }
 
-        function actualizarPreview(input) {
-            const img = input.parentElement.parentElement.querySelector('.img-mini-preview');
-            if (input.value && input.value.startsWith('http')) {
-                img.src = input.value;
-                img.style.display = 'block';
-            } else {
-                img.style.display = 'none';
+        // --- CONFIGURACIÓN DE EVENTOS DRAG & DROP ---
+        const dropZone = document.getElementById('dropZone');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+        });
+
+        dropZone.addEventListener('drop', e => {
+            const files = e.dataTransfer.files;
+            procesarArchivos(files);
+        });
+
+        // --- PROCESAMIENTO Y COMPRESIÓN AUTOMÁTICA DE FOTOS ---
+        async function procesarArchivos(files) {
+            const archivosArray = Array.from(files).filter(file => file.type.startsWith('image/'));
+            if (archivosArray.length === 0) return;
+
+            document.getElementById('estadoCargaFotos').style.display = 'block';
+
+            for (const file of archivosArray) {
+                try {
+                    const base64Comprimido = await comprimirImagen(file);
+                    fotosCargadas.push(base64Comprimido);
+                } catch (err) {
+                    console.error("Error procesando imagen:", err);
+                }
             }
+
+            document.getElementById('estadoCargaFotos').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+            renderizarGaleriaPreview();
         }
 
-        function obtenerStringDeUrls() {
-            const inputs = document.querySelectorAll('.input-url-foto');
-            const urlsVaciasLimpias = Array.from(inputs).map(input => input.value.trim()).filter(val => val !== '');
-            return urlsVaciasLimpias.join(',');
+        function comprimirImagen(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 1200;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > MAX_WIDTH) {
+                            height = Math.round((height * MAX_WIDTH) / width);
+                            width = MAX_WIDTH;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        resolve(canvas.toDataURL('image/jpeg', 0.75));
+                    };
+                    img.onerror = err => reject(err);
+                };
+                reader.onerror = err => reject(err);
+            });
+        }
+
+        function renderizarGaleriaPreview() {
+            const galeria = document.getElementById('galeriaPreview');
+            const contador = document.getElementById('contadorFotos');
+            galeria.innerHTML = '';
+            contador.innerText = `${fotosCargadas.length} ${fotosCargadas.length === 1 ? 'foto' : 'fotos'}`;
+
+            fotosCargadas.forEach((fotoSrc, index) => {
+                const div = document.createElement('div');
+                div.className = 'preview-card';
+                div.innerHTML = `
+                    <img src="${fotoSrc}" alt="Preview ${index + 1}">
+                    ${index === 0 ? '<div class="badge-portada">Principal</div>' : ''}
+                    <button type="button" class="btn-quitar-foto" onclick="quitarFoto(${index})" title="Eliminar foto">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                `;
+                galeria.appendChild(div);
+            });
+        }
+
+        function quitarFoto(index) {
+            fotosCargadas.splice(index, 1);
+            renderizarGaleriaPreview();
         }
 
         // VALIDAR SESIÓN AL CARGAR
@@ -254,9 +411,8 @@
             document.getElementById('dashboardSection').style.display='block';
             document.getElementById('badgeVisitas').style.display='flex'; 
             
-            // Iniciar con un campo de URL vacío
-            document.getElementById('contenedor-urls').innerHTML = '';
-            agregarFilaUrl();
+            fotosCargadas = [];
+            renderizarGaleriaPreview();
 
             cargarPropiedades();
             cargarVisitas(); 
@@ -281,16 +437,18 @@
             lista.innerHTML = '';
             
             propiedades.forEach(p => {
-                const foto = p.imagen ? p.imagen.split(/[,\s\n]+/)[0] : '';
+                const listaFotos = separarFotos(p.imagen);
+                const foto = listaFotos.length > 0 ? listaFotos[0] : '';
                 const tag = p.corredora !== 'MGPropiedades' ? 
                     `<span class="badge bg-info text-dark mb-1">${p.corredora}</span>` : 
                     `<span class="badge bg-secondary mb-1">MG</span>`;
+                const badgeVendida = p.operacion === 'Vendida' ? `<span class="badge bg-danger mb-1 ms-1">VENDIDA</span>` : '';
                     
                 lista.innerHTML += `
                     <div class="col-md-6"><div class="card h-100 shadow-sm border-0"><div class="row g-0 h-100">
                         <div class="col-4"><img src="${foto}" class="img-fluid h-100 admin-img-preview rounded-start"></div>
                         <div class="col-8"><div class="card-body p-3">
-                            ${tag} <h6 class="text-truncate fw-bold">${p.titulo}</h6>
+                            ${tag}${badgeVendida} <h6 class="text-truncate fw-bold">${p.titulo}</h6>
                             <small class="text-primary fw-bold">${p.precio}</small><br>
                             <small class="text-muted"><i class="bi bi-geo-alt"></i> ${p.ubicacion}</small>
                             <div class="mt-2 d-flex gap-1">
@@ -307,12 +465,15 @@
             const token = localStorage.getItem('token');
             const id = document.getElementById('editId').value;
             
-            // Recoger todas las URLs en un solo string separado por comas
-            const urlsFinales = obtenerStringDeUrls();
-            if(!urlsFinales) {
-                alert("Debes agregar al menos una foto.");
+            if(fotosCargadas.length === 0) {
+                alert("Debes subir al menos una foto de la propiedad.");
                 return;
             }
+
+            const btnSubmit = document.getElementById('btnSubmit');
+            const textoOriginal = btnSubmit.innerText;
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Guardando...";
 
             const data = {
                 titulo: document.getElementById('titulo').value,
@@ -325,7 +486,7 @@
                 banos: parseInt(document.getElementById('banos').value)||0,
                 estacionamientos: parseInt(document.getElementById('estacionamientos').value)||0,
                 metros: parseInt(document.getElementById('metros').value)||0,
-                imagen: urlsFinales, // Se envía exactamente como el backend lo espera
+                imagen: fotosCargadas.join('\n'),
                 corredora: "MGPropiedades"
             };
             
@@ -333,13 +494,22 @@
             let method = 'POST';
             if(id) { url += `/${id}`; method = 'PUT'; delete data.corredora; }
 
-            const res = await fetch(url, {
-                method, headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify(data)
-            });
-            if(res.ok) { 
-                alert(id ? "Propiedad Actualizada" : "Propiedad Creada Exitosamente"); 
-                cancelarEdicion(); 
-                cargarPropiedades(); 
+            try {
+                const res = await fetch(url, {
+                    method, headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify(data)
+                });
+                if(res.ok) { 
+                    alert(id ? "Propiedad Actualizada" : "Propiedad Creada Exitosamente"); 
+                    cancelarEdicion(); 
+                    cargarPropiedades(); 
+                } else {
+                    alert("Hubo un problema al guardar la propiedad.");
+                }
+            } catch (err) {
+                alert("Error de conexión al guardar.");
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = textoOriginal;
             }
         });
 
@@ -362,7 +532,7 @@
             document.getElementById('editId').value = p.id;
             document.getElementById('titulo').value = p.titulo;
             document.getElementById('operacion').value = p.operacion;
-            document.getElementById('tipo').value = p.tipo;
+            document.getElementById('tipo').value = p.tipo === 'Terreno' ? 'Parcelas / Terrenos' : p.tipo;
             document.getElementById('precio').value = p.precio;
             document.getElementById('ubicacion').value = p.ubicacion;
             document.getElementById('descripcion').value = p.descripcion || '';
@@ -371,18 +541,8 @@
             document.getElementById('estacionamientos').value = p.estacionamientos || '';
             document.getElementById('metros').value = p.metros || '';
             
-            // Reconstruir los inputs de imágenes
-            const contenedorUrls = document.getElementById('contenedor-urls');
-            contenedorUrls.innerHTML = '';
-            const fotos = p.imagen ? p.imagen.split(/[,\s\n]+/) : [];
-            
-            if(fotos.length === 0) {
-                agregarFilaUrl(); // Poner al menos uno vacío si no hay fotos
-            } else {
-                fotos.forEach(foto => {
-                    if(foto.trim() !== '') agregarFilaUrl(foto.trim());
-                });
-            }
+            fotosCargadas = separarFotos(p.imagen);
+            renderizarGaleriaPreview();
             
             document.getElementById('formTitle').innerText = "Editando: " + p.titulo;
             document.getElementById('btnSubmit').innerText = "Guardar Cambios";
@@ -395,9 +555,8 @@
             document.getElementById('propiedadForm').reset();
             document.getElementById('editId').value='';
             
-            // Limpiar URLs y dejar solo uno
-            document.getElementById('contenedor-urls').innerHTML = '';
-            agregarFilaUrl();
+            fotosCargadas = [];
+            renderizarGaleriaPreview();
 
             document.getElementById('formTitle').innerText="Nueva Propiedad";
             document.getElementById('btnSubmit').innerText="Publicar Propiedad";
@@ -412,7 +571,18 @@
             }
         }
 
-        function formatoPesos(i) { i.value = i.value.replace(/\D/g,"").replace(/\B(?=(\d{3})+(?!\d))/g,"."); }
+        // Formateador inteligente que soporta tanto Pesos ($) como UF
+        function formatoPrecioInteligente(input) {
+            let val = input.value.toUpperCase();
+            const esUF = val.includes('U') || val.includes('F');
+            const numeros = val.replace(/\D/g, "");
+            if (!numeros) {
+                input.value = esUF ? "UF " : "";
+                return;
+            }
+            const formateado = numeros.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            input.value = esUF ? `UF ${formateado}` : `$${formateado}`;
+        }
     </script>
 </body>
 </html>

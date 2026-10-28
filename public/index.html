@@ -21,7 +21,6 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            /* Aquí está tu modificación a 0.4s */
             transition: opacity 0.4s ease, visibility 0.4s ease;
         }
         .preloader img {
@@ -74,6 +73,7 @@
             text-align: center;
             overflow: hidden; 
             background-color: var(--color-primario); 
+            padding: 40px 0;
         }
         
         #fondo-rotativo {
@@ -87,7 +87,14 @@
         .hero-content-layer {
             position: relative; z-index: 2; width: 100%; display: flex; flex-direction: column; align-items: center;
         }
-        .hero-title { font-weight: 800; font-size: 3.5rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .hero-title { 
+            font-weight: 800; 
+            font-size: 3.2rem; 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+            margin-bottom: 35px; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); 
+        }
         
         /* BUSCADOR GLASSMORPHISM (VIDRIO ESMERILADO) */
         .search-wrapper {
@@ -104,7 +111,7 @@
         .form-select, .form-control { border-radius: 8px; border: none; padding: 12px; font-size: 0.9rem; color: #333; }
         .form-select:focus, .form-control:focus { box-shadow: 0 0 0 3px rgba(0,51,102,0.3); }
         .btn-buscar { 
-            background-color: var(--color-primario); color: white; width: 100%; height: 100%; font-weight: 700; border: none; border-radius: 8px;
+            background-color: var(--color-primario); color: white; width: 100%; height: 100%; min-height: 46px; font-weight: 700; border: none; border-radius: 8px;
             text-transform: uppercase; letter-spacing: 1px; transition: background 0.3s;
         }
         .btn-buscar:hover { background-color: #002244; color: white; }
@@ -188,7 +195,7 @@
             filter: blur(4px) brightness(0.6) !important; 
         }
 
-        /* --- NUEVOS ESTILOS PARA LA SECCIÓN DE BOSQUES Y PARCELAS --- */
+        /* --- ESTILOS PARA LA SECCIÓN DE BOSQUES Y PARCELAS --- */
         #inversiones {
             background: linear-gradient(rgba(10, 25, 47, 0.8), rgba(10, 25, 47, 0.8)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
             background-attachment: fixed; 
@@ -210,6 +217,44 @@
         .icon-feature {
             font-size: 1.25rem;
             color: #ffc107; 
+        }
+
+        /* FOOTER CORPORATIVO */
+        footer {
+            background-color: #0b1622;
+            color: #d1d5db;
+        }
+        footer h5 {
+            color: #ffffff;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        footer a {
+            color: #9ca3af !important;
+            transition: color 0.2s;
+        }
+        footer a:hover {
+            color: #ffffff !important;
+        }
+
+        /* OPTIMIZACIÓN MÓVIL (CELULARES) */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 1.9rem;
+                margin-bottom: 20px;
+                padding: 0 10px;
+            }
+            .search-wrapper {
+                padding: 20px 15px;
+                width: 95%;
+            }
+            #inversiones {
+                /* Evita el bug de zoom en iOS Safari y Android */
+                background-attachment: scroll;
+            }
+            #carouselNosotros .carousel-item img {
+                height: 300px;
+            }
         }
     </style>
 </head>
@@ -287,7 +332,7 @@
                 </div>
             </div>
 
-            <div class="mt-4 text-center">
+            <div class="mt-4 text-center px-2">
                 <a href="https://wa.me/56975575540?text=Hola%20MGPropiedades,%20quiero%20vender%20mi%20casa%20con%20ustedes" target="_blank" class="text-white text-decoration-none fw-bold fs-5 d-block mb-2" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
                     ¿Eres propietario? <span class="text-warning text-decoration-underline">Haz clic aquí para vender tu casa con nosotros</span>
                 </a>
@@ -399,13 +444,13 @@
 
                     <h5 class="fw-bold mt-4" style="color: var(--color-primario);">Nuestros Servicios</h5>
                     <ul class="list-unstyled lista-servicios text-muted">
-                        <li><i class="bi bi-check-circle-fill"></i> Compra de propiedades</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Venta de propiedades</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Arriendo de propiedades</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Compra y venta de parcelas de agrado</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Compra y venta de predios forestales y bosques (por metro ruma)</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Asesoría legal, comercial y administrativa</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Apoyo en procesos bancarios y notariales</li>
+                        <li><i class="bi bi-check-circle-fill text-primary me-1"></i> Compra de propiedades</li>
+                        <li><i class="bi bi-check-circle-fill text-primary me-1"></i> Venta de propiedades</li>
+                        <li><i class="bi bi-check-circle-fill text-primary me-1"></i> Arriendo de propiedades</li>
+                        <li><i class="bi bi-check-circle-fill text-primary me-1"></i> Compra y venta de parcelas de agrado</li>
+                        <li><i class="bi bi-check-circle-fill text-primary me-1"></i> Compra y venta de predios forestales y bosques (por metro ruma)</li>
+                        <li><i class="bi bi-check-circle-fill text-primary me-1"></i> Asesoría legal, comercial y administrativa</li>
+                        <li><i class="bi bi-check-circle-fill text-primary me-1"></i> Apoyo en procesos bancarios y notariales</li>
                     </ul>
 
                     <div class="mt-4 p-3 bg-light border-start border-5 border-primary">
@@ -501,27 +546,28 @@
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5>MGPropiedades</h5>
-                    <p>Expertos en corretaje y gestión inmobiliaria en el Gran Concepción. Tu confianza es nuestro mayor activo.</p>
+                    <p class="small text-secondary">Expertos en corretaje urbano, parcelas y gestión forestal en la Región del Biobío y todo Chile. Tu confianza es nuestro mayor activo.</p>
                 </div>
                 <div class="col-md-4 mb-4">
                     <h5>Navegación</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-decoration-none text-muted">Inicio</a></li>
-                        <li><a href="#propiedades" class="text-decoration-none text-muted">Propiedades</a></li>
-                        <li><a href="https://wa.me/56975575540" class="text-decoration-none text-muted">Vender mi casa</a></li>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="#" class="text-decoration-none">Inicio</a></li>
+                        <li class="mb-2"><a href="#inversiones" class="text-decoration-none">Parcelas y Bosques</a></li>
+                        <li class="mb-2"><a href="#propiedades" class="text-decoration-none">Propiedades Publicadas</a></li>
+                        <li class="mb-2"><a href="https://wa.me/56975575540" target="_blank" class="text-decoration-none">Vender mi propiedad</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4 mb-4">
                     <h5>Contacto</h5>
-                    <ul class="list-unstyled">
-                        <li id="footer-telefono-li"><i class="bi bi-whatsapp"></i> Cargando...</li>
-                        <li><i class="bi bi-envelope"></i> mgcorredordepropiedades@gmail.com</li>
-                        <li><i class="bi bi-geo-alt"></i> Concepción, Chile</li>
+                    <ul class="list-unstyled small text-secondary">
+                        <li class="mb-2" id="footer-telefono-li"><i class="bi bi-whatsapp text-success me-1"></i> Cargando...</li>
+                        <li class="mb-2"><i class="bi bi-envelope text-info me-1"></i> mgcorredordepropiedades@gmail.com</li>
+                        <li class="mb-2"><i class="bi bi-geo-alt text-danger me-1"></i> Concepción, Región del Biobío, Chile</li>
                     </ul>
                 </div>
             </div>
             <hr class="border-secondary mt-4">
-            <p class="text-center m-0 text-muted">&copy; 2023 MGPropiedades. Todos los derechos reservados.</p>
+            <p class="text-center m-0 small text-secondary">&copy; 2026 MGPropiedades. Todos los derechos reservados.</p>
         </div>
     </footer>
 
@@ -568,19 +614,19 @@
                             <span class="badge bg-dark" id="modalOperacion">VENTA</span>
                         </div>
                         
-                        <div class="row text-center mb-4 p-3 bg-light rounded">
-                            <div class="col border-end" title="Tipo"><strong><i class="bi bi-house fs-5 text-primary"></i></strong><br><span id="modalTipo"></span></div>
-                            <div class="col border-end" title="Dormitorios"><strong><i class="bi bi-door-closed fs-5 text-primary"></i></strong><br><span id="modalDorm"></span></div>
-                            <div class="col border-end" title="Baños"><strong><i class="bi bi-droplet fs-5 text-primary"></i></strong><br><span id="modalBanos"></span></div>
-                            <div class="col border-end" title="Estacionamientos"><strong><i class="bi bi-car-front fs-5 text-primary"></i></strong><br><span id="modalEst"></span></div>
-                            <div class="col" title="Metros Cuadrados"><strong><i class="bi bi-arrows-fullscreen fs-5 text-primary"></i></strong><br><span id="modalM2"></span></div>
+                        <div class="row text-center mb-4 p-3 bg-light rounded" id="modalCaracteristicasRow">
+                            <div class="col border-end" title="Tipo"><strong><i id="modalIconoTipo" class="bi bi-house fs-5 text-primary"></i></strong><br><span id="modalTipo"></span></div>
+                            <div class="col border-end" id="colModalDorm" title="Dormitorios"><strong><i class="bi bi-door-closed fs-5 text-primary"></i></strong><br><span id="modalDorm"></span></div>
+                            <div class="col border-end" id="colModalBanos" title="Baños"><strong><i class="bi bi-droplet fs-5 text-primary"></i></strong><br><span id="modalBanos"></span></div>
+                            <div class="col border-end" id="colModalEst" title="Estacionamientos"><strong><i class="bi bi-car-front fs-5 text-primary"></i></strong><br><span id="modalEst"></span></div>
+                            <div class="col" title="Superficie"><strong><i class="bi bi-arrows-fullscreen fs-5 text-primary"></i></strong><br><span id="modalM2"></span></div>
                         </div>
 
                         <p class="text-muted mb-1"><i class="bi bi-geo-alt-fill text-danger"></i> <span id="modalUbicacion"></span></p>
-                        <div id="modalDescripcion" class="mt-3 mb-4 p-3 border rounded" style="word-wrap: break-word; overflow-wrap: break-word;"></div>
+                        <div id="modalDescripcion" class="mt-3 mb-4 p-3 border rounded" style="word-wrap: break-word; overflow-wrap: break-word; white-space: pre-line;"></div>
 
                         <div class="d-grid gap-2 mt-4">
-                            <a href="#" id="btnWspFinal" target="_blank" class="btn btn-wsp-modal fs-5">
+                            <a href="#" id="btnWspFinal" target="_blank" class="btn btn-wsp-modal fs-5 text-center">
                                 <i class="bi bi-whatsapp"></i> Me interesa esta propiedad
                             </a>
                         </div>
@@ -596,16 +642,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             const preloader = document.getElementById('preloader');
             
-            // Lo mostramos por 1.2 segundos y luego lo desvanecemos
             setTimeout(() => {
                 preloader.style.opacity = '0';
                 preloader.style.visibility = 'hidden';
                 setTimeout(() => {
                     preloader.style.display = 'none';
-                }, 400); // Tus 0.4s de transición
+                }, 400); 
             }, 1200);
             
-            // Seguro de vida: Si por cualquier falla del navegador no se oculta, lo forzamos a desaparecer a los 3 segundos máximo.
             setTimeout(() => {
                 if (preloader) preloader.style.display = 'none';
             }, 3000);
@@ -619,9 +663,24 @@
         let valorUF_Hoy = 0;
         let modalDetalle; 
 
+        // Función inteligente para separar fotos (soporta URLs y Base64 arrastradas desde el PC)
+        function obtenerArrayFotos(strImagen) {
+            if (!strImagen) return [];
+            return strImagen.split(/,(?=\s*(?:https?:|data:))|[\n]+/).map(f => f.trim()).filter(Boolean);
+        }
+
+        // Icono dinámico según el tipo de propiedad
+        function obtenerIconoTipo(tipo) {
+            if (!tipo) return 'bi-house';
+            const t = tipo.toLowerCase();
+            if (t.includes('bosque') || t.includes('parcela') || t.includes('terreno')) return 'bi-tree';
+            if (t.includes('departamento')) return 'bi-building';
+            return 'bi-house';
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             modalDetalle = new bootstrap.Modal(document.getElementById('modalDetalle'));
-            document.getElementById('footer-telefono-li').innerHTML = `<i class="bi bi-whatsapp"></i> +${TELEFONO_EMPRESA}`;
+            document.getElementById('footer-telefono-li').innerHTML = `<i class="bi bi-whatsapp text-success me-1"></i> +${TELEFONO_EMPRESA}`;
             
             mostrarSkeletonLoader();
             
@@ -694,9 +753,10 @@
             
             const filtradas = todasLasPropiedades.filter(p => {
                 const coincideOperacion = operacionActual === "" || p.operacion === operacionActual;
+                const coincideTipo = tipo === "" || p.tipo === tipo || (tipo === "Parcelas / Terrenos" && p.tipo === "Terreno");
                 return coincideOperacion &&
                        (p.ubicacion.toLowerCase().includes(ubicacion) || p.titulo.toLowerCase().includes(ubicacion)) &&
-                       (tipo === "" || p.tipo === tipo);
+                       coincideTipo;
             });
 
             renderizar(filtradas);
@@ -719,12 +779,30 @@
             }
 
             lista.forEach((p) => {
-                const fotos = p.imagen ? p.imagen.split(/[,\s\n]+/) : ['https://via.placeholder.com/400'];
-                const fotoPrincipal = fotos[0]; 
+                const fotos = obtenerArrayFotos(p.imagen);
+                const fotoPrincipal = fotos.length > 0 ? fotos[0] : 'https://via.placeholder.com/400'; 
                 const precioDisplay = formatearPrecio(p.precio);
 
-                const m2 = p.metros ? `${p.metros} m²` : '-';
+                const m2 = p.metros ? `${new Intl.NumberFormat('es-CL').format(p.metros)} m²` : '-';
                 const est = p.estacionamientos ? p.estacionamientos : '-';
+                const iconoTipo = obtenerIconoTipo(p.tipo);
+
+                const esTerrenoOBosque = (p.tipo && (p.tipo.includes('Parcela') || p.tipo.includes('Terreno') || p.tipo.includes('Bosque'))) && (!p.dormitorios && !p.banos);
+
+                const filaCaracteristicas = esTerrenoOBosque ? `
+                    <div class="row g-0 mb-3 text-center text-muted small border-top border-bottom py-2">
+                        <div class="col-6 border-end" title="Categoría"><i class="bi ${iconoTipo} fs-5 d-block text-success"></i> ${p.tipo}</div>
+                        <div class="col-6" title="Superficie"><i class="bi bi-arrows-fullscreen fs-5 d-block text-primary"></i> ${m2}</div>
+                    </div>
+                ` : `
+                    <div class="row g-0 mb-3 text-center text-muted small border-top border-bottom py-2">
+                        <div class="col border-end" title="Tipo"><i class="bi ${iconoTipo} fs-5 d-block"></i> ${p.tipo}</div>
+                        <div class="col border-end" title="Dormitorios"><i class="bi bi-door-closed fs-5 d-block"></i> ${p.dormitorios || 0}</div>
+                        <div class="col border-end" title="Baños"><i class="bi bi-droplet fs-5 d-block"></i> ${p.banos || 0}</div>
+                        <div class="col border-end" title="Estacionamientos"><i class="bi bi-car-front fs-5 d-block"></i> ${est}</div>
+                        <div class="col" title="Metros Cuadrados"><i class="bi bi-arrows-fullscreen fs-5 d-block"></i> ${m2}</div>
+                    </div>
+                `;
 
                 const estaVendida = p.operacion.toLowerCase() === 'vendida' || p.titulo.toLowerCase().includes('vendid');
                 const cintaHtml = estaVendida ? `<div class="cinta-vendida">VENDIDA</div>` : '';
@@ -743,13 +821,7 @@
                             <div class="mb-2 text-muted small text-uppercase fw-bold"><i class="bi bi-geo-alt"></i> ${p.ubicacion}</div>
                             <h5 class="card-title fw-bold mb-3 text-truncate">${p.titulo}</h5>
                             
-                            <div class="row g-0 mb-3 text-center text-muted small border-top border-bottom py-2">
-                                <div class="col border-end" title="Tipo"><i class="bi bi-house fs-5 d-block"></i> ${p.tipo}</div>
-                                <div class="col border-end" title="Dormitorios"><i class="bi bi-door-closed fs-5 d-block"></i> ${p.dormitorios || 0}</div>
-                                <div class="col border-end" title="Baños"><i class="bi bi-droplet fs-5 d-block"></i> ${p.banos || 0}</div>
-                                <div class="col border-end" title="Estacionamientos"><i class="bi bi-car-front fs-5 d-block"></i> ${est}</div>
-                                <div class="col" title="Metros Cuadrados"><i class="bi bi-arrows-fullscreen fs-5 d-block"></i> ${m2}</div>
-                            </div>
+                            ${filaCaracteristicas}
                             
                             <h4 class="precio mb-3">${precioDisplay}</h4>
                             
@@ -770,12 +842,19 @@
             document.getElementById('modalPrecio').innerHTML = formatearPrecio(propiedad.precio);
             document.getElementById('modalOperacion').innerText = propiedad.operacion;
             document.getElementById('modalTipo').innerText = propiedad.tipo;
+            document.getElementById('modalIconoTipo').className = `bi ${obtenerIconoTipo(propiedad.tipo)} fs-5 text-primary`;
             document.getElementById('modalUbicacion').innerText = propiedad.ubicacion;
             
+            const esTerrenoOBosque = (propiedad.tipo && (propiedad.tipo.includes('Parcela') || propiedad.tipo.includes('Terreno') || propiedad.tipo.includes('Bosque'))) && (!propiedad.dormitorios && !propiedad.banos);
+            
+            document.getElementById('colModalDorm').style.display = esTerrenoOBosque ? 'none' : 'block';
+            document.getElementById('colModalBanos').style.display = esTerrenoOBosque ? 'none' : 'block';
+            document.getElementById('colModalEst').style.display = esTerrenoOBosque ? 'none' : 'block';
+
             document.getElementById('modalDorm').innerText = propiedad.dormitorios || 0;
             document.getElementById('modalBanos').innerText = propiedad.banos || 0;
             document.getElementById('modalEst').innerText = propiedad.estacionamientos || '-';
-            document.getElementById('modalM2').innerText = propiedad.metros ? `${propiedad.metros} m²` : '-';
+            document.getElementById('modalM2').innerText = propiedad.metros ? `${new Intl.NumberFormat('es-CL').format(propiedad.metros)} m²` : '-';
             
             const descContainer = document.getElementById('modalDescripcion');
             if(propiedad.descripcion && propiedad.descripcion.trim() !== "") {
@@ -791,7 +870,7 @@
             const carouselInner = document.getElementById('carouselInner');
             carouselInner.innerHTML = '';
             
-            const fotos = propiedad.imagen ? propiedad.imagen.split(/[,\s\n]+/) : [];
+            const fotos = obtenerArrayFotos(propiedad.imagen);
             
             fotos.forEach((fotoUrl, i) => {
                 if(fotoUrl && fotoUrl.length > 5) { 
